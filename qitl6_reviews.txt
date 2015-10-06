@@ -1,0 +1,77 @@
+
+We are delighted to inform you that your submission has been accepted for an oral presentation at the QITL-6, November 4th - November 6th 2015 in Tuebingen.
+
+In order to present at QITL, you will have to register. You can benefit from a reduced registration fee by singing up before October 11th.
+Please register as soon as possible at the following site: http://www2.sfs.uni-tuebingen.de/qitl/index.php/registration/
+
+Each oral presentation is assigned to a slot of 40 minutes including
+discussion.
+
+We also ask all presenters to work out an extended version of their
+submissions, which we will then include in our online proceedings.
+The extended version has to be submitted to us until October 12th (there will be no extension!). We kindly ask you to make sure to incorporate the suggestions of your reviewers into your extended paper.
+
+We only accept extended versions that use the IEEE Manuscript template,
+available at http://www.ieee.org/conferences_events/conferences/publishing/templates.html The extended version of your submission may fill at most 6 pages (including references, appendix etc.).
+Before October 12th, please send the paper to: konferenz-qitl6@sfs.uni-
+tuebingen.de
+
+Finally, if you have any questions please do not hesitate to ask us. You can reach us using the same e-mail address to which you will submit your extended version.
+
+Congratulations again! We are looking forward to meeting you at QITL-6,
+
+The Organizing Committee
+
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 37
+TITLE: Some theoretical and experimental observerations on naive discriminative learning
+AUTHORS: Antti Arppe and Stefan Evert
+
+OVERALL EVALUATION: 3 (strong accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- REVIEW -----------
+This is a well-written paper with a (for me) amazing result of both high theoretical value and important practical consequences.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 37
+TITLE: Some theoretical and experimental observerations on naive discriminative learning
+AUTHORS: Antti Arppe and Stefan Evert
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- REVIEW -----------
+Michael Dawson at the university of Alberta, Edmonton, has done a lot of work on the relation between the Rescorla-Wagner equations and other learning algorithms, see, e.g.,
+
+Dawson, M. R. W. (2008). Connectionism and classical conditioning. Comparative Cognition and Behavior Reviews, 3 (Monograph), 1-115.
+
+The authors should check to what extent their results are already described in the specialist literature, and Dawson is a good place to start.  See also
+
+Miller, R. R., Barnet, R. C., & Grahame, N. J. (1995). Assessment of the Rescorla-Wagner model. Psychological Bulletin, 117(3), 363-386.
+
+When the Rescorla-Wagner equations are used to predict language
+processing (rather than used as a classifier/regression technique), we
+consistently find that the iterative equations outperform
+the Danks equilibrium equations (and mathematical equivalents). The
+simple recurrent equations, in other words, provide a much more precise
+window on human trial to trial learning than the Danks equilibrium
+equations, which basically require "infinite" experience. I suspect the
+same holds for the equivalent regression formulations. If you want to
+obtain optimal prediction/classification, go to machine learning. If you
+want to understand human learning, with all its failures (from the
+perspective of machine learning), then Rescorla-Wagner may be just
+right. From an evolutionary perspective, the work by
+
+Trimmer, P. C., McNamara, J. M., Houston, A. I., and Marshall, J. A. R. (2012). Does natural
+selection favour the Rescorla-Wagner rule? Journal of Theoretical Biology, 302:39–52.
+
+is interesting: They argue that RW has an evolutionary advantage over
+classifiers that, given sufficient data over large numbers of learning
+events, will outperform RW. But under less favorable learning
+conditions, RW has better evolutionary fitness.
+
+I think this will be an interesting contribution for the conference, but the authors should do a thorough literature research to establish to what extent their findings are already well established. Furthermore, they should more carefully distinguish between the goals to which the RW are put to use.  When it comes to human trial-to-trial implicit learning, it is an empirical issue what works best, and both our own empirical work as well as the abovementioned study in biology suggest that here the RW are actually more adequate as a description of learning in biological systems rather than machine learning/statistical techniques than "in the limit of experience" are mathematically equivalent.
