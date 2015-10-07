@@ -38,6 +38,8 @@ Email: arppe@ualberta.ca}}
 \section{Introduction}
 \label{sec:intro}
 
+\todo{Antti: discuss different ``applications'' of R-W as model of item-by-item learning in simple controlled experiments or with focus on asymptotic/stochastic learning behaviour for complex, non-separable problems.  Explain why we believe the latter is of particular interest in linguistics and why we see it as a main application area of NDL. It is the focus of this paper.}
+
 Naïve Discrimative Learning (NDL) \cite{baayenetal2011, baayen2011}, as implemented in \cite{shaoul2014}, performs linguistic classification on the basis of direct associations between cues and outcomes, which are learned incrementally according to the Rescorla-Wagner (R-W) equations \cite{rescorlawagner1972}.
 %%
 Danks \cite{danks2003} argued that if the R-W equations successfully acquire the true associations between cues and outcomes, they should approximate an equilibrium state in which the expected change in association values is zero if a cue-outcome event is randomly presented to the learner.  This equilibrium state can be computed directly by solving a matrix equation, without carrying out many iterations of R-W updates, making NDL attractive as an efficient learning technique for quantitative investigations in linguistics.  Use of the Danks equilibrium also circumvents the problem that a simulation of an R-W learner does not converge to a single state unless the learning rate is gradually decreased. 
@@ -47,15 +49,14 @@ It is well known that the R-W equations are related to neural networks (through 
 %% -- no, we shouldn't go into this in any detail at this point
 However, most authors do not seem to be aware of the true depth of these similarities and of their implications.
 
+\todo{Stefan: add paragraph on related work and update paragraph above with new references on prior work; explain what the novel contributions or advantages of our paper are}
 
-
-In this paper, we show that the R-W equations are identical to gradient-descent training of a single-layer feed-forward neural network, which we refer to as a single layer perceptron (SLP)\footnote{The term SLP is often reserved for a particular form of such a single-layer network using a Heavyside activation function.  Here, we use it more generally to refer to any single-layer feed-forward network.} here (Sec.~\ref{sec:slp}). Based on this result, we present a new, simpler derivation of the equilibrium conditions of \cite{danks2003} and prove that they correspond to the solution of a linear least-squares regression problem (Sec.~\ref{sec:regression}).  In Sec.~\ref{sec:consequence} we discuss some consequences of these new insights.
+In this paper, we show that the R-W equations are identical to gradient-descent training of a single-layer feed-forward neural network, which we refer to as a single layer perceptron (SLP)\footnote{The term SLP is often reserved for a particular form of such a single-layer network using a Heaviside activation function.  Here, we use it more generally to refer to any single-layer feed-forward network.} here (Sec.~\ref{sec:slp}). Based on this result, we present a new, simpler derivation of the equilibrium conditions of \cite{danks2003} and prove that they correspond to the solution of a linear least-squares regression problem (Sec.~\ref{sec:regression}).  In Sec.~\ref{sec:consequence} we discuss some consequences of these new insights.
 
 \section{The Rescorla-Wagner equations}
 \label{sec:math-def}
 
-This section gives a mathematically precise definition of the R-W model, following the notation of \cite{danks2003}.  The purpose of the R-W equations is to determine associations between a set of cues $C_1, \ldots, C_n$ and a single outcome $O$ in a population of event tokens $(\mathbf{c}\psupt, o\psupt)$, where $\mathbf{c}\psupt = (c_1\psupt, \ldots, c_n\psupt)$ is a vector of cue indicators for event $t$ and $o\psupt$ an indicator for the outcome $O$.  Formally,
-
+This section gives a mathematically precise definition of the R-W model, following the notation of \cite{danks2003}.  The purpose of the R-W equations is to determine associations between a set of cues $C_1, \ldots, C_n$ and a single outcome $O$ in a population of event tokens $(\mathbf{c}\psupt, o\psupt)$, where $\mathbf{c}\psupt = (c_1\psupt, \ldots, c_n\psupt)$ is a vector of cue indicators for the event $t$ and $o\psupt$ an indicator for the outcome $O$.  Formally,
 \begin{align}
   \label{eq:def-c-o}
   c_i\psupt &= 
@@ -82,18 +83,22 @@ When presented with an event $(\mathbf{c}, o)$, the R-W equations update the ass
     \alpha_i \beta_2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0
   \end{cases}
 \end{equation}
-Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the W-H rule).
+Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} in the context of artificial neuronal networks assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the W-H rule).
+
+\todo{Stefan: add paragraph on long-term behaviour, training based on events sampled from stochastic distribution, and focus on expected associations $E[V_i]$ here.}
 
 \cite{danks2003} argues that a successful R-W model should approach an equilibrium state of the association vector $\mathbf{V} = (V_1, \ldots, V_n)$ where the expected update $E[\Delta V_i] = 0$ if a random event token is sampled from the population.  If we make the simplifying assumption that $\beta_1 = \beta_2 = \beta$, this condition corresponds to the equality
 \begin{equation}
   \label{eq:danks-equi}
   \lambda \frac1m \sum_{t=1}^m c_i\psupt o_i\psupt - \sum_{j=1}^n V_j \frac1m \sum_{t=1}^m c_i\psupt c_j\psupt = 0
 \end{equation}
+\todo{Stefan: add derivation based on previous paragraph}
 In Danks's notation, Eq.~(\ref{eq:danks-equi}) can be written as
 \begin{equation}
   \label{eq:danks-probs}
   \lambda P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
 \end{equation}
+\todo{Stefan: explain Danks notation}
 and is equal to his Eq.~(11) \cite[113]{danks2003} multiplied by $P(C_i)$.
 
 \section{R-W and the single layer perceptron}
@@ -114,7 +119,7 @@ We will now formulate a single-layer feed-forward neural network (SLP) whose lea
     0 & \text{otherwise}
   \end{cases}
 \end{align} 
-Here, $a_i > 0$ is a (different) measure of the salience of cue $C_i$ and $\lambda > 0$ the maximum activation of outcome $O$.  Note that the event representation $(\mathbf{x}, z)$ is connected to the representation $(\mathbf{c}, o)$ through the equivalences $x_i = a_i c_i$ and $z = \lambda o$.  In the W-H case, the two representations are identical.
+Here, $a_i > 0$ is a (different) measure of the salience of cue $C_i$ and $\lambda > 0$ the maximum activation of outcome $O$.  Note that the event representation $(\mathbf{x}, z)$ is connected to the representation $(\mathbf{c}, o)$ through the equivalences $x_i = a_i c_i$ and $z = \lambda o$.  In the simplified W-H case, the two representations are identical.
 
 The SLP computes the activation of the outcome as a linear combination $y = \sum_{i=1}^n w_i x_i$ of the input variables, where $\mathbf{w} = (w_1, \ldots, w_n)$ is the weight vector of the network.  It uses a linear activation function $h(y) = y$ and a Euclidean cost function for the difference between $y$ and the desired activation level $z$.  The cost associated with a given event token $(\mathbf{x}, z)$ is thus
 \begin{equation}
@@ -126,9 +131,9 @@ For batch updates based on the full population of event tokens, the correspondin
   \label{eq:cost-batch}
   E(\mathbf{w}) = \sum_{t=1}^m E(\mathbf{w}, \mathbf{x}\psupt, z\psupt) .
 \end{equation}
-If smaller batches are used, the sum $j$ ranges over a subset of the population for each update step.
+If smaller batches are used, the sum $j$ ranges over a subset of the population for each update step, or a single token in the extreme case of item-by-item learning.
 
-Presented with an event token $(\mathbf{x}, z)$, gradient-descent training of this SLP updates the weight vector by 
+Presented with a single event token $(\mathbf{x}, z)$, gradient-descent training of the SLP updates the weight vector by 
 \begin{equation}
   \label{eq:gd-rule}
   \Delta w_i = -\delta \frac{\partial E(\mathbf{w}, \mathbf{x}, z)}{\partial w_i}
@@ -171,7 +176,7 @@ The assumption $\beta_1 = \beta_2$ can be relaxed if we change the representatio
     0 & \text{otherwise}
   \end{cases}
 \end{equation}
-i.e.\ if we allow the salience of cues to differ between positive ($o = 1$) and negative ($o = 0$) events; the scaling factor $\beta_2 / \beta_1$ is the same for all cues $C_i$.  We do not pursue this extension further here because it affects the equilibrium state in an unpredictable way.  As \cite{danks2003} has already observed, the cue saliences $\alpha_i$ have no impact at all on the equilibrium and the maximum activation level $\lambda$ merely results in a linear scaling. 
+i.e.\ if we allow the salience of cues to differ between positive ($o = 1$) and negative ($o = 0$) events; the scaling factor $\beta_2 / \beta_1$ is the same for all cues $C_i$.  We do not pursue this extension further here because -- unlike other parameters of R-W -- the ratio between positive and negative learning rates has a complex effect on the equilibrium state.  As \cite{danks2003} has already observed, neither the cue saliences $\alpha_i$ nor the overall learning rate $\beta = \beta_1 = \beta_2$ affect the equilibrium and the maximum activation level $\lambda$ merely results in a linear scaling. 
 
 \section{R-W and least-squares regression}
 \label{sec:regression}
@@ -184,6 +189,7 @@ We have shown in Sec.~\ref{sec:slp} that the R-W equations describe the gradient
 \end{equation}
 This equivalence holds generally, not only in the case of the simplified W-H rule.  Thus, both R-W and our SLP aim to solve the same regression.
 
+\todo{Stefan: distinguish between convergence of a particular learner and stochastic convergence of $E[V_j]$; batch updates should be equivalent to the expectation(?)}
 If the training procedure is successful, the weight vector $\mathbf{w}$ should approach the least-squares solution of the regression problem.  With single updates (corresponding to the R-W model), convergence cannot be achieved unless the learning rate is gradually reduced.  With batch updates treating the entire population as a single batch, the cost $E(\mathbf{w})$ is a convex function of $\mathbf{w}$ and the gradient descent procedure converges to its unique minimum after a sufficient number of iterations.\footnote{In fact, the minimum of $E(\mathbf{w})$ might not be unique under certain circumstances, viz. if the correlation matrix of the cues is not positive definite; cf. \cite[115--116]{danks2003} for the special case of ``coextensive'' cues. In order to keep the discussion straightforward, we assume the general case of a unique minimum in the present paper.}
 
 In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times n$ matrix $\mathbf{X} = (x_i\psupt) = (x_{ti})$ of cues for all event tokens in the population.  The rows of this matrix correspond to event tokens $t$, the columns to cues $i$; i.e.\ row number $t$ contains the input vector $\mathbf{x}\psupt$.  We also define the column vector $\mathbf{z} = (z\psup{1}, \ldots, z\psup{m})$ of outcomes and recall that $\mathbf{w} = (w_1, \ldots, w_n)$ is a column vector of SLP weights.  The batch cost can now be written as a dot product
@@ -191,12 +197,12 @@ In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times
   \label{eq:lsr-matrix}
   E(\mathbf{w}) = \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr)^T \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr) .
 \end{equation}
-The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations
+The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations \todo{cite reference (textbook)}
 \begin{equation}
   \label{eq:lsr-normal}
   \mathbf{X}^T \mathbf{X} \mathbf{w} = \mathbf{X}^T \mathbf{z} .
 \end{equation}
-In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-probs}) with $\lambda = 1$, i.e.
+In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  \todo{Stefan: spell out the ``straightforward'' calculation?}  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-probs}) with $\lambda = 1$, i.e.
 \[
 P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
 \]
@@ -208,6 +214,15 @@ In the general case where the regression problem has a unique solution, $\mathbf
   \mathbf{w}^* = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{z} .
 \end{equation}
 Standard statistical software such as R \cite{R2015} can be used to compute $\mathbf{w}^*$ reliably and efficiently.  It is not necessary to carry out the iterative training procedure of the R-W model or the neural network, and there is no need to worry about convergence of the iterative training.
+
+\todo{Stefan: note on the case where $\mathbf{X}$ is rank-deficient; linear regression chooses the minimum solution, but what about R-W? undefined behaviour? we could make conjectures here and propose simulation studies as future work}
+
+\section{R-W and logistic regression}
+\label{sec:logistic}
+
+\todo{Stefan: add short section on logistic regression, which is generally more sensible for category predictions than least-squares; gradient descent leads to update equation analogous to R-W, which we could also simulate}
+
+\todo{Antti: some comments on experiments indicating that logistic regression learns implausible associations if there are too many cues/features; further investigation will be future work}
 
 \section{Consequences}
 \label{sec:consequence}
@@ -284,6 +299,11 @@ If R-W association learning or SLP training does not approximate the least-squar
 For instance, with a real dataset on the relationship between 46 linguistic contextual features as cues and 3404 occurrences of 4 near-synonymous Finnish \textsc{think} verbs as outcomes \cite{arppe2008, arppe2013, shaoul2014}, the cue-outcome associations arising from a simulation of R-W learning (using the default parameters) do appear to converge to the equilibrium values eventually (\figurename~\ref{think_weights}). For the non-equivocal contextual features that have occurred, more or less, with multiple outcomes (e.g. \textsc{AgentGroup} and \textsc{AgentIndividual} with \emph{pohtia}), this convergence seems to happen early, well within the course of the dataset. In contrast, with near-categorical features that in practice occur with only one of the four outcomes (e.g. the near-categorical co-occurrence of \textsc{PatientInfinitive} with \emph{ajatella} vs. the categorical non-occurrence of \textsc{PatientDirectQuote} with this same verb), convergence appears to happen much slower, so that multiple iterations over the full data set (as many as five or more times) are needed to approximate the equilibrium state.  Furthermore, this simulation clearly shows, particularly in the case of \textsc{AgentIndividual} and \emph{pohtia}, a remaining, sometimes quite substantial oscillation in the cue-outcome associations weights. In this respect, establishing how the learning parameters $\beta_1$ and $\beta_2$ might be adjusted in the course of the R-W learning process would be worthwhile. Interestingly, for the quasi-perfect cases, it does not appear to have an effect on the asymptotic result of R-W learning whether the order of datapoints is randomized in the learning process or not, in contrast to reservations in \cite[119]{danks2003} -- but for the non-equivocal cases, the assumption of randomized order appears motivated. Of course, in all this one generally presumes that the proportions of the cue-outcome co-occurrences are the same in the overall population from which the dataset has been sampled.
 
 In contrast, using a tiny, artificial dataset for English nouns and their pluralizations (10 types with 419 tokes), with orthographical unigraph features as cues and lemmas/features as outcomes \cite[Fig. 4]{baayenetal2011}, in some but not all cases the cue-outcome association weights arising from R-W learning do not appear to converge to the equilibrium values at all, even after 200 iterations over the randomized dataset, e.g. `\emph{s}' as cue and \textsc{plural} as outcome, or `\emph{s}' as cue and `\emph{as}' as outcome (\figurename~\ref{plural_weights}).\footnote{Among various versions of the \texttt{ndl} package \cite[v0.1.6 vs 0.2.16]{shaoul2014}, there are several variants as how to calculate the equilibrium weights, but that does not appear to be the source of the observed non-convergence. In this paper, we have used \texttt{ndl v0.1.6}.}
+
+\section{Open questions and future work}
+\label{sec:outlook}
+
+\todo{Antti: revise and extend future work section; especially things we want to look at in the next months}
 
 Finally, having established NDL as linear regression with its well-known drawbacks (e.g.\ a propensity for overfitting the training data, especially if there is a large number $n$ of cues), it will be interesting to contrast it with more state-of-the-art machine learning techniques, as a systematic follow-up and analysis of the empirical observations in \cite{arppebaayen2011}.\footnote{Results using the Finnish \textsc{think} dataset \cite{arppe2008, arppe2013} indicated that (1) outcomes predicted by NDL and GLM (in the case of the 4-way \emph{polytomous} outcome using the \emph{one-vs-rest} technique implemented in the \texttt{polytomous} R package \cite{arppe2013}) agree with a rate of 94.8\%, that (2) the distributions of instance-wise maximum NDL cumulative association weights and corresponding maximum GLM expected probabilities have similar general distribution contours (cf. \figurename ~\ref{think_assocs_probs}), and that (3) instance-wise maximum NDL association weights and corresponding maximum GLM expected probabilities correlate highly, with $r_{Spearman}=.950$, as do (4) individual NDL association weights and GLM log-odds, with $r_{Spearman}=.897$.} We plan to carry out a mathematical analysis and empirical study of (i) logistic regression (a subtype of Generalized Linear Model [GLM]), which is more appropriate for categorical data than linear least-squares regression, and (ii) regularization techniques, which control overfitting and encourage sparse solutions.
 
