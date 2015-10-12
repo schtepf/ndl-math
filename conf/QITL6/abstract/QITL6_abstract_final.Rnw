@@ -83,23 +83,36 @@ When presented with an event $(\mathbf{c}, o)$, the R-W equations update the ass
     \alpha_i \beta_2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0
   \end{cases}
 \end{equation}
-Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} in the context of artificial neuronal networks assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the W-H rule).
+Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} in the context of artificial neuronal networks assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the Widrow-Hoff rule).
 
-\todo{Stefan: add paragraph on long-term behaviour, training based on events sampled from stochastic distribution, and focus on expected associations $E[V_i]$ here.}
+We will make the assumption that $\beta_1 = \beta_2 = \beta$ from here on, but put no restrictions on $a_i$ or $\lambda$.  The R-W equations can then be combined into a single formula
+%%
+\begin{equation}
+  \label{eq:rw-single}
+  \Delta V_i = c_i a_i \beta \left( \lambda o - \sum_{j=1}^n c_j V_j \right) .
+\end{equation}
+%%
+In linguistics, NDL is often used to model a natural learning process, where event tokens are randomly sampled from the population, rather than a controlled experimental procedure.  In this case, there is little point in studying the associations acquired by one particular learner after a given number of training events, i.e.\ the sequence of association vectors $\mathbf{V}\psupt = (V_1\psupt, \ldots, V_n\psupt)$.  We are rather interested in the typical associations obtained by averaging across a large number of learners, i.e.\ the expected values $E[\mathbf{V}\psupt]$, and in how much variability there is between individual learners.  Correspondingly, the events $(\mathbf{c}\psupt, o\psupt)$ are interpreted as i.i.d.\ random variables sampled from the population of event tokens.  As will be shown in the following section, we can use theoretical arguments to determine the asymptotic behaviour $\lim_{t\to \infty} E[\mathbf{V}\psupt]$ of R-W learning, and we can carry out simulation experiments in order to study variability between learners.
 
-\cite{danks2003} argues that a successful R-W model should approach an equilibrium state of the association vector $\mathbf{V} = (V_1, \ldots, V_n)$ where the expected update $E[\Delta V_i] = 0$ if a random event token is sampled from the population.  If we make the simplifying assumption that $\beta_1 = \beta_2 = \beta$, this condition corresponds to the equality
+Since the event $(\mathbf{c}\psupt, o\psupt)$ at time $t$ is independent from the current associations $\mathbf{V}\psupt$, we can take expectations on both sides of Eq.~(\ref{eq:rw-single}) to obtain $E[\mathbf{V}\psup{t+1}] = E[\mathbf{V}\psupt] + E[\Delta \mathbf{V}\psupt]$ with
+%%
+\begin{equation}
+  \label{eq:exp-rw}
+  \begin{split}
+    E[\Delta V_i\psupt]
+    &= a_i\beta \left( \lambda E[o c_i] - \sum_{j=1}^n E[c_i c_j] E[V_j\psupt] \right) \\
+    &= a_i\beta \left( \lambda P(O, C_i) - \sum_{j=1}^n P(C_i, C_j) E[V_j\psupt] \right) .
+  \end{split}
+\end{equation}
+%% 
+Note that $E[xy] = E[x]\cdot E[y]$ for independent random variables $x$ and $y$, that the expectation of the product $o c_i$ of two indicator variables is the co-occurrence probability of the two events, i.e.\ $E[o c_i] = P(O, C_i)$, and that $E[c_i c_j] = P(C_i, C_j)$ for the same reason.  Eq.~(\ref{eq:exp-rw}) is identical to \cite[(A-5)]{gluckbower1988} except for differences in notation.
+
+Danks \cite{danks2003} argues that a successful R-W model should converge to an equilibrium state $\mathbf{V} = \lim_{t\to\infty} E[\mathbf{V}\psupt]$ of the expected association vector, where the expected update $E[\Delta \mathbf{V}] = 0$.  From Eq.~(\ref{eq:exp-rw}), we obtain the identity
 \begin{equation}
   \label{eq:danks-equi}
-  \lambda \frac1m \sum_{t=1}^m c_i\psupt o_i\psupt - \sum_{j=1}^n V_j \frac1m \sum_{t=1}^m c_i\psupt c_j\psupt = 0
+  \lambda P(O, C_i) - \sum_{j=1}^n P(C_i, C_j) V_j = 0
 \end{equation}
-\todo{Stefan: add derivation based on previous paragraph}
-In Danks's notation, Eq.~(\ref{eq:danks-equi}) can be written as
-\begin{equation}
-  \label{eq:danks-probs}
-  \lambda P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
-\end{equation}
-\todo{Stefan: explain Danks notation}
-and is equal to his Eq.~(11) \cite[113]{danks2003} multiplied by $P(C_i)$.
+for the Danks equilibrium, which is equal to his Eq.~(11) \cite[113]{danks2003} multiplied by $P(C_i)$.
 
 \section{R-W and the single layer perceptron}
 \label{sec:slp}
@@ -202,7 +215,7 @@ The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \m
   \label{eq:lsr-normal}
   \mathbf{X}^T \mathbf{X} \mathbf{w} = \mathbf{X}^T \mathbf{z} .
 \end{equation}
-In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  \todo{Stefan: spell out the ``straightforward'' calculation?}  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-probs}) with $\lambda = 1$, i.e.
+In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  \todo{Stefan: spell out the ``straightforward'' calculation?}  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-equi}) with $\lambda = 1$, i.e.
 \[
 P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
 \]
