@@ -83,7 +83,7 @@ When presented with an event $(\mathbf{c}, o)$, the R-W equations update the ass
     \alpha_i \beta_2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0
   \end{cases}
 \end{equation}
-Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} in the context of artificial neuronal networks assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the Widrow-Hoff rule).
+Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \cite{widrowhoff1960} in the context of artificial neuronal networks assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the Widrow-Hoff or W-H rule).
 
 We will make the assumption that $\beta_1 = \beta_2 = \beta$ from here on, but put no restrictions on $a_i$ or $\lambda$.  The R-W equations can then be combined into a single formula
 %%
@@ -200,35 +200,43 @@ We have shown in Sec.~\ref{sec:slp} that the R-W equations describe the gradient
   \min_{\mathbf{w}} E(\mathbf{w})
   = \min_{\mathbf{w}} \sum_{t=1}^m E(\mathbf{w}, \mathbf{x}\psupt, z\psupt) .
 \end{equation}
-This equivalence holds generally, not only in the case of the simplified W-H rule.  Thus, both R-W and our SLP aim to solve the same regression.
+This equivalence holds generally, not only in the case of the simplified W-H rule.  Thus, both R-W and our SLP aim to solve the same least-squares regression.
 
-\todo{Stefan: distinguish between convergence of a particular learner and stochastic convergence of $E[V_j]$; batch updates should be equivalent to the expectation(?)}
-If the training procedure is successful, the weight vector $\mathbf{w}$ should approach the least-squares solution of the regression problem.  With single updates (corresponding to the R-W model), convergence cannot be achieved unless the learning rate is gradually reduced.  With batch updates treating the entire population as a single batch, the cost $E(\mathbf{w})$ is a convex function of $\mathbf{w}$ and the gradient descent procedure converges to its unique minimum after a sufficient number of iterations.\footnote{In fact, the minimum of $E(\mathbf{w})$ might not be unique under certain circumstances, viz. if the correlation matrix of the cues is not positive definite; cf. \cite[115--116]{danks2003} for the special case of ``coextensive'' cues. In order to keep the discussion straightforward, we assume the general case of a unique minimum in the present paper.}
+If the training procedure is successful, the weight vector $\mathbf{w}$ should approach the least-squares solution of the regression problem.  With item-by-time updates (corresponding to the behaviour of a single R-W learner), convergence cannot be achieved unless the learning rate is gradually reduced.\footnote{In fact, item-by-item updates do convergence if the regression problem is linearly separable, i.e.\ if perfect predictions can be achieved. This situation is highly unlikely in linguistic applications of NDL, though.}  With batch updates based on the entire population of event tokens (corresponding to the evoluation of expected associations $E[\mathbf{V}\psupt]$ according to Eq.~(\ref{eq:exp-rw})), the cost $E(\mathbf{w})$ is a convex function of $\mathbf{w}$ and the gradient descent procedure converges to its unique minimum after a sufficient number of iterations.\footnote{In fact, the minimum of $E(\mathbf{w})$ might not be unique under certain circumstances, viz. if the correlation matrix of the cues is not positive definite; cf. \cite[115--116]{danks2003} for the special case of ``coextensive'' cues. In order to keep the discussion straightforward, we assume the general case of a unique minimum in the present paper.}
 
-In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times n$ matrix $\mathbf{X} = (x_i\psupt) = (x_{ti})$ of cues for all event tokens in the population.  The rows of this matrix correspond to event tokens $t$, the columns to cues $i$; i.e.\ row number $t$ contains the input vector $\mathbf{x}\psupt$.  We also define the column vector $\mathbf{z} = (z\psup{1}, \ldots, z\psup{m})$ of outcomes and recall that $\mathbf{w} = (w_1, \ldots, w_n)$ is a column vector of SLP weights.  The batch cost can now be written as a dot product
+In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times n$ matrix $\mathbf{X} = (x_i\psupt) = (x_{ti})$ of cues for all event tokens in the population.  The rows of this matrix correspond to event tokens $t$, the columns to cues $i$; i.e.\ row number $t$ contains the input vector $\mathbf{x}\psupt$.  The particular ordering of the event tokens is irrelevant.  We also define the column vector $\mathbf{z} = (z\psup{1}, \ldots, z\psup{m}) = (z_1, \ldots, z_m)$ of outcomes and recall that $\mathbf{w} = (w_1, \ldots, w_n)$ is a column vector of SLP weights.  The batch cost can now be written as a dot product
 \begin{equation}
   \label{eq:lsr-matrix}
   E(\mathbf{w}) = \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr)^T \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr) .
 \end{equation}
-The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations \todo{cite reference (textbook)}
+The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations \cite[649]{degroot2002}
 \begin{equation}
   \label{eq:lsr-normal}
   \mathbf{X}^T \mathbf{X} \mathbf{w} = \mathbf{X}^T \mathbf{z} .
 \end{equation}
-In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  \todo{Stefan: spell out the ``straightforward'' calculation?}  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-equi}) with $\lambda = 1$, i.e.
+In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$, and $\mathbf{z}$ is a vector of indicator variables $z_t \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts between cues:
 \[
-P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
+(\mathbf{X}^T \mathbf{X})_{ij} = \sum_{t=1}^m x_{ti} x_{tj} = f(C_i, C_j) .
 \]
-which is the same as Eq.~(3) of \cite{danks2003} with rows multiplied by $P(C_i)$.  Since linear regression is invariant wrt.\ the salience factors $a_i$ (the weights are simply adjusted by reciprocal factors $1 / a_i$ to achieve the same regression values) and scales linearly with $\lambda$, equivalence to the equilibrium conditions \cite[112--114]{danks2003} also holds for arbitrary values of $a_i$ and $\lambda$.
+Similarly, $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts between the cues and the outcome $O$:
+\[
+(\mathbf{X}^T \mathbf{z})_i = \sum_{t=1}^m x_{ti} z_t = f(C_i, O) .
+\]
+Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-equi}) with $\lambda = 1$, i.e.
+\[
+P(O, C_i) - \sum_{j=1}^n P(C_i, C_j) V_j = 0
+\]
+which is the same as Danks's Eq.~(3) \cite[112]{danks2003} with rows multiplied by $P(C_i)$.  Since linear regression is invariant wrt.\ the salience factors $a_i$ (the weights are simply adjusted by reciprocal factors $1 / a_i$ to achieve the same regression predictions) and scales linearly with $\lambda$, equivalence to the equilibrium conditions \cite[112--114]{danks2003} also holds for arbitrary values of $a_i$ and $\lambda$.
 
 In the general case where the regression problem has a unique solution, $\mathbf{X}^T \mathbf{X}$ is symmetric and positive definite.  It can therefore be inverted and the least-squares solution is given by
 \begin{equation}
   \label{eq:lsr-solution}
   \mathbf{w}^* = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{z} .
 \end{equation}
-Standard statistical software such as R \cite{R2015} can be used to compute $\mathbf{w}^*$ reliably and efficiently.  It is not necessary to carry out the iterative training procedure of the R-W model or the neural network, and there is no need to worry about convergence of the iterative training.
+Standard statistical software such as R \cite{R2015} can be used to compute $\mathbf{w}^*$ reliably and efficiently.
+This least-squares solution corresponds to the equilibrium state $\mathbf{V} = \lim_{t\to\infty} E[\mathbf{V}\psupt]$ of the R-W learner.  If we are mainly interested in such an asymptotic equilibrium,
+it is not necessary to carry out the iterative training procedure of the R-W model or the neural network, and there is no need to worry about convergence of the training.
 
-\todo{Stefan: note on the case where $\mathbf{X}$ is rank-deficient; linear regression chooses the minimum solution, but what about R-W? undefined behaviour? we could make conjectures here and propose simulation studies as future work}
 
 \section{R-W and logistic regression}
 \label{sec:logistic}
@@ -376,9 +384,11 @@ Danks, D. (2003). Equilibria of the Rescorla–Wagner model. \emph{Journal of Ma
 M.~R.~W. Dawson, ``Connectionism and classical conditioning,'' \emph{Comparative Cognition \& Behavior Reviews}, vol.~3, 2008, retrieved from http://comparative-cognition-and-behavior-reviews.org/.
 \new
 
+\bibitem{degroot2002}
+M.~H. DeGroot and M.~J. Schervish, \emph{Probability and Statistics}, 3rd~ed.\ Boston: Addison Wesley, 2002.
+
 \bibitem{gluckbower1988}
 M.~A. Gluck and G.~H. Bower, ``From conditioning to category learning: An adaptive network model,'' \emph{Journal of Experimental Psychology: General}, vol. 117, no.~3, pp. 227--247, 1988.
-\new
 
 \bibitem{milleretal1995}
 R.~C. Miller, R.~C. Barnet, and N.~J. Grahame, ``Assessment of the {Rescorla-Wagner} model,'' \emph{Psychological Bulletin}, vol. 117, no.~3, pp. 363--386, 1995.
