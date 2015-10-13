@@ -71,7 +71,7 @@ This section gives a mathematically precise definition of the R-W model, followi
     0 & \text{otherwise}
   \end{cases}
 \end{align}
-for $t = 1, \ldots, m$ (and $m = \infty$ can be allowed).
+for $t = 1, \ldots, m$ (and $m = \infty$ can be allowed).  We assume that one of the cues is a ``background stimulus'' that is always present, e.g.\ $c_1\psupt \equiv 1$.  This is necessary in order to obtain full equivalence with least-squares regression.  It is also intuitively plausible: without the background stimulus, the learner would not be able to expect the outcome $O$ in the absence of any explicit cues. 
 
 When presented with an event $(\mathbf{c}, o)$, the R-W equations update the associations $V_i$ between the individual cues and the outcome according to Eq.~(\ref{eq:def-rw}), which is a more formal notation of Eq.~(1) from \cite[111]{danks2003}.
 \begin{equation}
@@ -209,7 +209,7 @@ In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times
   \label{eq:lsr-matrix}
   E(\mathbf{w}) = \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr)^T \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr) .
 \end{equation}
-The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations \cite[649]{degroot2002}
+The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations \cite[142]{bishop2006}
 \begin{equation}
   \label{eq:lsr-normal}
   \mathbf{X}^T \mathbf{X} \mathbf{w} = \mathbf{X}^T \mathbf{z} .
@@ -241,9 +241,58 @@ it is not necessary to carry out the iterative training procedure of the R-W mod
 \section{R-W and logistic regression}
 \label{sec:logistic}
 
-\todo{Stefan: add short section on logistic regression, which is generally more sensible for category predictions than least-squares; gradient descent leads to update equation analogous to R-W, which we could also simulate}
+If the goal of an NDL application is to make a probabilistic prediction about the outcome $O$ based on cues $C_i$, most machine-learning textbooks would recommend logistic regression \cite[205]{bishop2006} instead of a least-squares approach.  Logistic regression can be understood as a SLP with logistic activation function
+%%
+\begin{equation}
+  \label{eq:logistic-function}
+  h(y) = \frac{1}{1 + e^{-y}}
+\end{equation}
+%%
+and $y = \sum_{i=1}^n w_i x_i$.  Since $0\leq h(y)\leq 1$, it can be interpreted as the predicted probability of the outcome $O$ (i.e.\ of $o=1$) given the cues $x_1, \ldots, x_n$.  The accuracy of a prediction is assessed by the Bernoulli cost
+%%
+\begin{equation}
+  \label{eq:bernoulli-cost}
+  \begin{split}
+    E(\mathbf{w}, \mathbf{x}, o) 
+    &= \begin{cases}
+      -\log h(y) & \text{if } o = 1 \\
+      -\log (1 - h(y)) & \text{if } o = 0
+    \end{cases}
+    \\
+    &= - o \log h(y) - (1-o) \log (1 - h(y))
+  \end{split}
+\end{equation}
+%%
+which indicates how well the SLP was able to predict the presence or absence of the outcome.  Item-by-item gradient-descent training leads to updates of the form
+%%
+\begin{equation}
+  \label{eq:lrm-gd}
+  \Delta w_i = -\delta \frac{\partial E(\mathbf{w}, \mathbf{x}, o)}{\partial w_i}
+\end{equation}
+%%
+with 
+%%
+\begin{equation}
+  \label{eq:lrm-gd-gradient}
+  \frac{\partial E(\mathbf{w}, \mathbf{x}, o)}{\partial w_i}
+  = (h(y) - o) x_i 
+\end{equation}
+%%
+according to \cite[205]{bishop2006}.  Interpreting the weights $w_i$ as salience-adjusted associations $V_j = a_j w_j$ as in Sec.~\ref{sec:slp} and keeping in mind that $x_i = a_i c_i$, we obtain a form that is strikingly similar to the R-W equations.
+%%
+\begin{equation}
+  \label{eq:lrm-rw}
+  \Delta V_i =
+  \begin{cases}
+    0 & \text{if } c_i = 0\\
+    \delta a_i \left( 1 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 1 \\
+    \delta a_i \left( 0 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 0
+  \end{cases}
+\end{equation}
+%%
+The only difference from Eq.~(\ref{eq:def-rw}) is that the total association computed by the learner is now transformed into a probability by the logistic activation function $h(y)$.  
 
-\todo{Antti: some comments on experiments indicating that logistic regression learns implausible associations if there are too many cues/features; further investigation will be future work}
+\todo{Antti: note that it will be interesting to compare this learner with the original R-W; some comments on experiments indicating that logistic regression learns implausible associations if there are too many cues/features; further investigation will be future work}
 
 \section{Consequences}
 \label{sec:consequence}
@@ -377,15 +426,15 @@ Baayen, R. H. (2011). Corpus linguistics and naive discriminative learning. \emp
 \bibitem{baayenetal2011}
 Baayen, R. H., Milin, P., Filipovic Durdevic, D., Hendrix, P. and Marelli, M. (2011). An amorphous model for morphological processing in visual comprehension based on naive discriminative learning. \emph{Psychological Review}, 118, 438-482.
 
+\bibitem{bishop2006}
+C.~M. Bishop, \emph{Pattern Recognition and Machine Learning}.\ Springer, 2006.
+
 \bibitem{danks2003}
 Danks, D. (2003). Equilibria of the Rescorla–Wagner model. \emph{Journal of Mathematical Psychology}, 47, 109 –121. doi:10.1016/S0022- 2496(02)00016-0.
 
 \bibitem{dawson2008}
 M.~R.~W. Dawson, ``Connectionism and classical conditioning,'' \emph{Comparative Cognition \& Behavior Reviews}, vol.~3, 2008, retrieved from http://comparative-cognition-and-behavior-reviews.org/.
 \new
-
-\bibitem{degroot2002}
-M.~H. DeGroot and M.~J. Schervish, \emph{Probability and Statistics}, 3rd~ed.\ Boston: Addison Wesley, 2002.
 
 \bibitem{gluckbower1988}
 M.~A. Gluck and G.~H. Bower, ``From conditioning to category learning: An adaptive network model,'' \emph{Journal of Experimental Psychology: General}, vol. 117, no.~3, pp. 227--247, 1988.
