@@ -40,18 +40,15 @@ Email: arppe@ualberta.ca}}
 
 \todo{Antti: discuss different ``applications'' of R-W as model of item-by-item learning in simple controlled experiments or with focus on asymptotic/stochastic learning behaviour for complex, non-separable problems.  Explain why we believe the latter is of particular interest in linguistics and why we see it as a main application area of NDL. It is the focus of this paper.}
 
-Naïve Discrimative Learning (NDL) \cite{baayenetal2011, baayen2011}, as implemented in \cite{shaoul2014}, performs linguistic classification on the basis of direct associations between cues and outcomes, which are learned incrementally according to the Rescorla-Wagner (R-W) equations \cite{rescorlawagner1972}.
+Naïve Discrimative Learning (NDL) \cite{baayenetal2011, baayen2011}, as implemented in \cite{shaoul2014}, performs linguistic classification on the basis of direct associations between cues and outcomes, which are learned incrementally according to the Rescorla-Wagner (R-W) equations \cite{rescorlawagner1972, milleretal1995}.
 %%
 Danks \cite{danks2003} argued that if the R-W equations successfully acquire the true associations between cues and outcomes, they should approximate an equilibrium state in which the expected change in association values is zero if a cue-outcome event is randomly presented to the learner.  This equilibrium state can be computed directly by solving a matrix equation, without carrying out many iterations of R-W updates, making NDL attractive as an efficient learning technique for quantitative investigations in linguistics.  Use of the Danks equilibrium also circumvents the problem that a simulation of an R-W learner does not converge to a single state unless the learning rate is gradually decreased. 
 
-It is well known that the R-W equations are related to neural networks (through the ``delta rule'' for gradient-descent training of a single-layer perceptron) and to linear least-squares regression (e.g.\ \cite{danks2003,baayenetal2011}). Furthermore, empirical observations have shown that, in comparison to other statistical classification techniques (logistic regression, support vector machines, random forests, and memory-based learning), logistic regression appears in practice closest to NDL, in terms of overall prediction accuracy, agreement among individual predicted outcomes, and the distribution of estimated probabilities \cite{arppebaayen2011}.
-%% \todo{formally, does one need to bridge/fudge the empirical link here of NDL with logistic vs. the formal link of NDL with ordinary regression?}
-%% -- no, we shouldn't go into this in any detail at this point
-However, most authors do not seem to be aware of the true depth of these similarities and of their implications.
+It is well known that the R-W equations are related to neural networks (through the ``delta rule'' for gradient-descent training of a single-layer perceptron) and to linear least-squares regression (e.g.\ \cite{gluckbower1988,danks2003,baayenetal2011}). Furthermore, empirical observations have shown that, compared to other statistical classification techniques (such as support vector machines, random forests, or memory-based learning), NDL appears to be most similar to logistic regression with respect to overall prediction accuracy, agreement among individual predicted outcomes, and the distribution of estimated probabilities \cite{arppebaayen2011}. However, many authors do not seem to be aware of the true depth of these similarities and of their implications.
 
-\todo{Stefan: add paragraph on related work and update paragraph above with new references on prior work; explain what the novel contributions or advantages of our paper are}
+While precise results on the correspondence of the R-W equations with a certain single-layer perceptron \cite[155f]{suttonbarto1981} and with least-squares regression \cite[457]{stone1986} are available, they are scattered across various publications, presented in different notation, and often given without full, self-contained derivations.  The most comprehensive treatment of the relation between R-W and various types of neural networks is a recent monograph by Dawson \cite{dawson2008}.  Dawson combines a mathematical comparison with various simulation experiments, but he rejects neural networks with linear activation function as inappropriate \cite[11]{dawson2008} and consequently does not discuss the connection to least-squares regression at all.  
 
-In this paper, we show that the R-W equations are identical to gradient-descent training of a single-layer feed-forward neural network, which we refer to as a single layer perceptron (SLP)\footnote{The term SLP is often reserved for a particular form of such a single-layer network using a Heaviside activation function.  Here, we use it more generally to refer to any single-layer feed-forward network.} here (Sec.~\ref{sec:slp}). Based on this result, we present a new, simpler derivation of the equilibrium conditions of \cite{danks2003} and prove that they correspond to the solution of a linear least-squares regression problem (Sec.~\ref{sec:regression}).  In Sec.~\ref{sec:consequence} we discuss some consequences of these new insights.
+In this paper, we collect and explain the precise equivalences between R-W, neural networks and least-squares regression, using a consistent notation and giving mathematical derivations where appropriate.  In Sec.~\ref{sec:math-def} we present different forms of the R-W equations, including the stochastic version implicitly used by \cite{danks2003}. We then show that R-W is identical to gradient-descent training of a single-layer feed-forward neural network, which we refer to as a single layer perceptron (SLP)\footnote{The term SLP is often reserved for a particular form of such a single-layer network using a Heaviside activation function.  Here, we use it more generally to refer to any single-layer feed-forward network.} here (Sec.~\ref{sec:slp}). Based on this result, we give a new, simpler derivation of the equilibrium conditions of \cite{danks2003} and prove that they correspond to the solution of a linear least-squares regression problem (Sec.~\ref{sec:regression}). Sec.~\ref{sec:logistic} briefly addresses the similarity between R-W and logistic regression.  Finally we discuss some consequences of these new insights in Sec.~\ref{sec:consequence} and complement them with preliminary simulation experiments.
 
 \section{The Rescorla-Wagner equations}
 \label{sec:math-def}
@@ -434,14 +431,12 @@ Danks, D. (2003). Equilibria of the Rescorla–Wagner model. \emph{Journal of Ma
 
 \bibitem{dawson2008}
 M.~R.~W. Dawson, ``Connectionism and classical conditioning,'' \emph{Comparative Cognition \& Behavior Reviews}, vol.~3, 2008, retrieved from http://comparative-cognition-and-behavior-reviews.org/.
-\new
 
 \bibitem{gluckbower1988}
 M.~A. Gluck and G.~H. Bower, ``From conditioning to category learning: An adaptive network model,'' \emph{Journal of Experimental Psychology: General}, vol. 117, no.~3, pp. 227--247, 1988.
 
 \bibitem{milleretal1995}
 R.~C. Miller, R.~C. Barnet, and N.~J. Grahame, ``Assessment of the {Rescorla-Wagner} model,'' \emph{Psychological Bulletin}, vol. 117, no.~3, pp. 363--386, 1995.
-\new
 
 \bibitem{R2015}
 R Core Team (2015). \emph{R: A language and environment for statistical computing}. R Foundation for
@@ -455,12 +450,10 @@ Shaoul, C., Arppe, A., Hendrix, P., Milin, P. and Baayen, R. H. (2014).
 \emph{ndl: Naive Discriminative Learning}. R package versions 0.1.6-0.2.16.
 
 \bibitem{stone1986}
-G.~O. Stone, ``An analysis of the delta rule and the learning of statistical associations,'' in \emph{Parallel Distributed Processing: Explorations in the Microstructure of Cognition, Vol. 1: Foundations}, D.~E. Rumelhart and J.~L. McClelland, Eds.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge, MA: MIT Press, 1986, ch.~11, pp. 444--459.
-\new
+G.~O. Stone, ``An analysis of the delta rule and the learning of statistical associations,'' in \emph{Parallel Distributed Processing: Explorations in the Microstructure of Cognition, Vol. 1: Foundations}, D.~E. Rumelhart and J.~L. McClelland, Eds.\ Cambridge, MA: MIT Press, 1986, ch.~11, pp. 444--459.
 
 \bibitem{suttonbarto1981}
 R.~S. Sutton and A.~G. Barto, ``Toward a modern theory of adaptive networks: Expectation and prediction,'' \emph{Psychological Review}, vol.~88, no.~2, pp. 135--170, 1981.
-\new
 
 \bibitem{widrowhoff1960}
 Widrow, B., and Hoff, M. E. (1960). Adaptive switching circuits. \emph{IRE WESCON convention record}, 96–104. New York: IRE. (Reprinted in Anderson, J. A., and Rosenfeld, E. (Eds.) (1988). \emph{Neurocomputing: Foundations of research}, 123–134. Cambridge, MA: MIT Press.)
