@@ -1,0 +1,51 @@
+\ProvidesPackage{beamerthemeStefanPlain}
+
+\definecolor{osnared}{rgb}{.7,.05,.15}      % main colour for slides
+
+\definecolor{primary}{named}{osnared}       % primary = structure
+\definecolor{secondary}{rgb}{.1, 0, .5}     % secondary = dark blue
+\definecolor{counterpoint}{rgb}{.1, .4, 0}  % counterpoint = dark green
+\definecolor{foreground}{rgb}{0, 0, 0}      % foreground = black
+\definecolor{light}{rgb}{.5, .4, .6}        % light colour = grey with blueish tint
+
+\definecolor{purered}{rgb}{.7, 0, 0}        % "pure" red, green and blue
+\definecolor{puregreen}{rgb}{0, .5, 0}
+\definecolor{pureblue}{rgb}{0, 0, .7}
+
+\mode<presentation>             % ==========
+
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+
+% Tills' opinion: should be done in an inner theme, not here.
+\usesubitemizeitemtemplate{%
+    \tiny\raise1.5pt\hbox{\color{beamerstructure}$\blacktriangleright$}%
+}
+\usesubsubitemizeitemtemplate{%
+    \tiny\raise1.5pt\hbox{\color{beamerstructure}$\bigstar$}%
+}
+
+\setbeamersize{text margin left=1cm,text margin right=1cm}
+
+% don't show Logo (bottom right corner) by default, but define commands so user can activate/deactivate it
+\pgfdeclareimage[height=12mm]{fau-logo}{fau-logo-philtheo}
+\pgfdeclareimage[height=10mm]{ccl-logo}{CCL_logo}
+\newcommand{\showLogo}{\logo{\raisebox{3.3mm}{\pgfuseimage{ccl-logo}}\hspace{4mm}\pgfuseimage{fau-logo}}}
+\newcommand{\hideLogo}{\logo{}}
+
+\usecolortheme[named=osnared]{structure}
+\usecolortheme{rose}
+\setbeamercolor{frametitle}{fg=osnared,bg=white}
+\setbeamercolor{logo}{fg=black,bg=white}
+%% coloured math can be quite annoying (esp. if mixed in displayed formulas with underbraces etc.)
+% \setbeamercolor{math text inlined}{fg=secondary} 
+
+\setbeamercolor*{palette primary}{use=structure,fg=black,bg=structure.fg!30!white}
+\setbeamercolor*{palette secondary}{use=structure,fg=white,bg=structure.fg!50!white}
+\setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=structure.fg!80!white}
+\setbeamercolor*{palette quaternary}{fg=white,bg=black}
+
+
+\mode<all>                      % ==========
+
+

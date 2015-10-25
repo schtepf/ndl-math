@@ -1,0 +1,55 @@
+%%
+%% grid-like layout of strings etc in PGF picture
+%%
+
+\usepackage{calc}
+
+%% configure grid layout and style:
+%%   \setGridOrigin{<x>}{<y>} ... origin of grid
+%%   \setGridX{3cm}           ... unit on x-axis (columns)
+%%   \setGridY{1cm}           ... unit on y-axis (rows)
+%%   \setGridAlignment{left}{base} ... alignment of elements in grid
+%%   \renewcommand{\gridStyle}[1]{\small\secondary{#1}}
+\newlength{\gridOriginX}  \setlength{\gridOriginX}{0cm}
+\newlength{\gridOriginY}  \setlength{\gridOriginY}{0cm}
+\newlength{\gridXunit}    \setlength{\gridXunit}{3cm}
+\newlength{\gridYunit}    \setlength{\gridYunit}{1em}
+\newcommand{\setGridOrigin}[2]{%
+  \setlength{\gridOriginX}{#1}%
+  \setlength{\gridOriginY}{#2}%
+}
+\newcommand{\setGridX}[1]{\setlength{\gridXunit}{#1}}
+\newcommand{\setGridY}[1]{\setlength{\gridYunit}{#1}}
+\newcommand{\gridAlignH}{left}
+\newcommand{\gridAlignV}{base}
+\newcommand{\setGridAlignment}[2]{%
+  \renewcommand{\gridAlignH}{#1}%
+  \renewcommand{\gridAlignV}{#2}%
+}
+\newcommand{\gridStyle}[1]{\secondary{\small{}#1}}
+
+%% these are temporary registers for internal use
+\newlength{\gridTemp}
+\newlength{\gridTempX}
+\newlength{\gridTempY}
+
+%% internal: \gridXYcell{<col>}{<row>} -> \gridTempX, \gridTempY
+\newcommand{\gridXYcell}[2]{%
+  \setlength{\gridTempX}{\gridXunit * \real{#1} + \gridOriginX}%
+  \setlength{\gridTempY}{\gridYunit * \real{#2} + \gridOriginY}%
+}
+
+%% print text (\pgfbox) in specified cell (Col, Row)
+%%   \gridText<overlay>{Col}{Row}{Text}
+\newcommand<>{\gridText}[3]{%
+  \only#4{%
+    \gridXYcell{#1}{#2}%
+    \pgfputat{\pgfpoint{\gridTempX}{\gridTempY}}{%
+      \pgfbox[\gridAlignH,\gridAlignV]{\gridStyle{#3}}}}%
+}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

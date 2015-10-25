@@ -1,0 +1,111 @@
+%% \documentclass[handout,t]{beamer} % HANDOUT
+%% \documentclass[handout,notes=show,t]{beamer} % NOTES
+\documentclass[t]{beamer} % SLIDES
+\usepackage{etex}
+
+\usetheme{StefanAntti}                % page themes: StefanPlain, StefanFAU, StefanOsna
+%% \usepackage{beamer-font-lucida}  % commercial Lucida Math font package (recommended)
+%% \usepackage{beamer-font-charter} % commercial Charter Match font package
+%% \usepackage{beamer-font-arev}    % use Arev fonts from TexLive (combine with document option "smaller")
+\usepackage{beamer-tools-stefan}    % standard packages, definitions and macros
+
+%%%% uncomment the following macro libraries as needed
+%% \input{lib/pgf}   % basic PGF utility functions
+%% \input{lib/text}  % some macros for typesetting text
+%% \input{lib/math}  % basic mathematical notation
+%% \input{lib/stat}  % notation for probability theory and statistics
+%% \input{lib/vector}% convenience macros for vectors and matrices
+%% \input{lib/grid}  % grid-like layout of text and graphics in PGF picture
+%% \input{lib/tree}  % typesetting parse trees with PGF
+%% \input{lib/chart} % demonstrating chart parsers with PGF
+%% \input{lib/fl}    % some notation for formal language theory
+
+\input{local/config} % local adjustments to configuration and macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Titlepage
+
+\title[NDL: Theory \& Experiments]{\textbf{Naïve Discriminative Learning:}\\
+  Theoretical and Experimental Observations}
+%%\subtitle{}
+\author[S.~Evert \& A.~Arppe]{Stefan Evert$^1$ \& Antti Arppe$^2$}
+\institute[]{%
+  $^1$Friedrich-Alexander-Universität Erlangen-Nürnberg, Germany\\
+  {\secondary{\url{stefan.evert@fau.de}}}\\[1em]
+  $^2$University of Alberta, Edmonton, Canada\\
+  {\secondary{\url{arppe@ualberta.ca}}}
+}
+\date{QITL-6, Tübingen, 6 Nov 2015}
+
+
+\begin{document}
+
+%% \showLogo  % uncomment to show logo on title page in StefanPlain style
+\frame{\titlepage}
+\hideLogo
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Outline
+
+\section*{Outline}
+\frame{ 
+  \frametitle{Outline}
+  \tableofcontents
+}
+\AtBeginSubsection[]
+{
+  \begin{frame}
+    \frametitle{Outline}
+    \tableofcontents[current,currentsubsection]
+  \end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1 Introduction
+
+\section{Introduction}
+
+\subsection{Naïve Discriminative Learning}
+
+\input{pages/intro-ndl}
+
+\subsection{An example}
+
+\input{pages/intro-example}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2 Mathematics
+
+\section{Mathematics}
+
+\subsection{Rescorla-Wagner \& the Danks equilibrium}
+
+\input{pages/math-rw-danks}
+
+\subsection{NDL vs.\ the Perceptron vs.\  regression}
+
+\input{pages/math-perceptron}
+
+\subsection{The Danks equlibrium as least-squares regression}
+
+\input{pages/math-danks-linreg}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3 
+
+% \section{}
+
+% \input{pages/new-slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% References (if any)
+
+\frame[allowframebreaks]{
+  \frametitle{References}
+  \bibliographystyle{natbib-stefan}
+  \begin{scriptsize}
+    \bibliography{references}
+  \end{scriptsize}
+}
+
+\end{document}

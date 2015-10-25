@@ -1,0 +1,60 @@
+%%
+%% some useful macros: mathematical notation etc.
+%%
+
+%% abbreviations for logic symbols
+\renewcommand{\implies}{\Rightarrow}
+\newcommand{\equivalent}{\Leftrightarrow}
+
+%% abbreviations for common number spaces
+\newcommand{\setN}[1][]{\mathbb{N}_{#1}} % allows \setN and \setN[0]
+\newcommand{\setZ}{\mathbb{Z}}
+\newcommand{\setQ}{\mathbb{Q}}
+\newcommand{\setR}{\mathbb{R}}
+
+%% sets and (sub-)sets defined by condition
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\setdef}[2]{\set{#1\,|\,#2}}
+\newcommand{\bigset}[1]{\bigl\{#1\bigr\}}
+\newcommand{\bigsetdef}[2]{\bigset{#1\bigm|#2}}
+\newcommand{\setscale}[1]{\left\{#1\right\}}
+\newcommand{\setdefscale}[2]{\setscale{#1\left|\,#2\right.}}
+
+%% absolute value and norm
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\bigabs}[1]{\bigl\lvert #1\bigr\rvert}
+\newcommand{\absscale}[1]{\left\lvert #1\right\rvert}
+\newcommand{\norm}[2][]{\lVert #2\rVert_{#1}}
+\newcommand{\bignorm}[2][]{\bigl\lVert #2\bigr\rVert_{#1}}
+\newcommand{\normscale}[2][]{\left\lVert #2\right\rVert_{#1}}
+
+%% complement set (with optional index)
+\newcommand{\compl}[1][]{\mathcal{C}^{#1}}
+
+%% power set: \powerset{\Sigma^*}
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+
+%% uparrow: a \ua b = direct dominance in ordered tree
+\newcommand{\ua}{\uparrow}
+
+%% left-right arrow: this $\lra$ that
+\newcommand{\lra}{\leftrightarrow}
+
+%% expanded engineering notation: 4.2\x\e+5
+\newcommand{\e}[2]{10^{\ifthenelse{\equal{#1}{+}}{}{#1}#2}}
+\newcommand{\x}{\cdot}
+
+%% arg max & min: \argmax_{x\in C}, \argmin_{x\in C}
+\newcommand{\argmax}{\mathop{\text{arg~max}}}
+\newcommand{\argmin}{\mathop{\text{arg~min}}}
+
+%% infinitesimal elements: \dx, \dy = \dX{y}, \dz
+\newcommand{\dX}[1]{\,\mathit{d{#1}}}
+\newcommand{\dx}{\dX{x}}
+\newcommand{\dy}{\dX{y}}
+\newcommand{\dz}{\dX{z}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

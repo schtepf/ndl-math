@@ -1,0 +1,127 @@
+%%
+%% macros for demonstrating chart parsers with PGF
+%%
+
+\usepackage{calc,ifthen}
+
+%% configure chart dimensions:
+%%   \setlength{\chartXunit}{5mm}, \setlength{\chartYunit}{5mm}
+%%   \setChartWidth{8}
+\newlength{\chartXunit}
+\setlength{\chartXunit}{10mm}
+\newlength{\chartYunit}
+\setlength{\chartYunit}{5mm}
+\newcounter{ChartWidth}
+\setcounter{ChartWidth}{8}
+\newcommand{\setChartWidth}[1]{%
+  \setcounter{ChartWidth}{#1}}
+
+%% these are temporary registers for internal use
+\newlength{\chartTemp}
+\newlength{\chartTempH}
+\newlength{\chartTempW}
+\newlength{\chartTempX}
+\newlength{\chartTempY}
+
+%% internal: \chartXcoord{<x>} -> \chartTempX
+\newcommand{\chartXcoord}[1]{%
+  \setlength{\chartTempX}{\chartXunit * \real{#1}}%
+}
+
+%% internal: \chartYcoord{<y>} -> \chartTempY
+\newcommand{\chartYcoord}[1]{%
+  \setlength{\chartTempY}{\chartYunit * \real{#1}}%
+}
+
+%% internal: \chartXYcoord{<x>}{<y>} -> \chartTempX, \chartTempY
+\newcommand{\chartXYcoord}[2]{%
+  \chartXcoord{#1}\chartYcoord{#2}%
+}
+
+%% internal: insert strut for full text line height (to improve text alignment)
+\newcommand{\chartStrut}{%
+  \settoheight{\chartTemp}{X}\rule{0mm}{\chartTemp}%
+}
+ 
+%% put terminal symbol <Text> in given <Slot> (x-coordinate) with optional label
+%%   \chartTerminal<overlay>[Lab]{Slot}{Text}
+\newcommand<>{\chartTerminal}[3][chartNULL]{%
+  \only#4{%
+    \chartXYcoord{#2}{0}
+    \settowidth{\chartTempW}{#3}
+    \pgfputat{\pgfpoint{\chartTempX}{\chartTempY}}{\pgfbox[center,base]{\chartStrut{}#3}}%
+    \addtolength{\chartTempY}{.4em}%
+    \pgfnoderect{#1}[virtual]{\pgfpoint{\chartTempX}{\chartTempY}}{%
+      \pgfpoint{\chartXunit / 2}{1em}}%
+  }
+}
+
+%% draw arrow across span of substring at height <Y> and label with <Tag>
+%%   \chartSpan[Lab]{Y}{X1}{X2}{Tag}
+\newcommand<>{\chartSpan}[5][chartNULL]{%
+  \only#6{%
+    \chartXYcoord{#3}{#2}%
+    \setlength{\chartTemp}{\chartTempX}%
+    \chartXcoord{#4}%
+    \addtolength{\chartTemp}{\chartXunit * \real{-.35}}%
+    \addtolength{\chartTempX}{\chartXunit * \real{.35}}%
+    \begin{pgfscope}
+      \pgfclearstartarrow{}\pgfsetendarrow{\pgfarrowtriangle{3pt}}%
+      \pgfsetlinewidth{1pt}%
+      \color{counterpoint}%
+      \pgfline{\pgfpoint{\chartTemp}{\chartTempY}}{\pgfpoint{\chartTempX}{\chartTempY}}%
+    \end{pgfscope}
+    \setlength{\chartTempH}{\chartTempY + \chartYunit * \real{0.4}}%
+    \setlength{\chartTempW}{\chartTempX - \chartTemp}%
+    \setlength{\chartTempX}{(\chartTemp + \chartTempX) / 2}%
+    \pgfnoderect{#1}[virtual]{\pgfpoint{\chartTempX}{\chartTempH}}{\pgfpoint{\chartTempW}{\chartYunit * \real{0.8}}}%
+    \addtolength{\chartTempY}{2pt}%
+    \pgfputat{\pgfpoint{\chartTempX}{\chartTempY}}{%
+      \pgfbox[center,base]{\scriptsize\color{secondary}#5}}%
+  }%  
+}
+
+%% CFG production for use as span label (LHS in bold)
+%%   \charProd{LHS}{RHS}
+\newcommand{\chartProd}[2]{%
+  \textbf{#1} $\to$ {#2}%
+}
+
+%% draw dashed line across entire chart at height <Y>, optional with <Text> on LHS
+%%   \chartRule{Y}, \chartRule[Text]{Y}
+\newcommand<>{\chartRule}[2][]{%
+  \only#3{%
+    \begin{pgfscope}
+      \chartXYcoord{0}{#2}%
+      \setlength{\chartTemp}{\chartTempX}%
+      \chartXcoord{\theChartWidth}%
+      \addtolength{\chartTemp}{\chartXunit * \real{-.5}}%
+      \addtolength{\chartTempX}{\chartXunit * \real{-.5}}%
+      \addtolength{\chartTempY}{\chartYunit * \real{.4}}%
+      \pgfclearstartarrow{}\pgfclearendarrow{}%
+      \pgfsetlinewidth{1pt}%
+      \pgfsetdash{{2mm}{2mm}}{1mm}%
+      \pgfline{\pgfpoint{\chartTemp}{\chartTempY}}{\pgfpoint{\chartTempX}{\chartTempY}}%
+      \addtolength{\chartTemp}{-4pt}%
+      \pgfputat{\pgfpoint{\chartTemp}{\chartTempY}}{\pgfbox[right,base]{\small #1}}%
+    \end{pgfscope}
+  }%  
+}
+
+%% draw edge of parse tree into chart (nodes must have been labelled);
+%% uses current color (change with \color{...} before drawing edges)
+%%   \chartEdge<overlay>{Lab1}{Lab2}
+\newcommand<>{\chartEdge}[2]{%
+  \begin{pgfscope}
+    \pgfclearstartarrow%
+    \pgfclearendarrow%
+    \pgfsetlinewidth{1.5pt}%
+    \pgfnodesetsepstart{2pt}%
+    \pgfnodeconnline#3{#1}{#2}%
+  \end{pgfscope}
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

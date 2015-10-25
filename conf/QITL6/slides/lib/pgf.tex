@@ -1,0 +1,30 @@
+%%
+%% support macros for graphics with the PGF packages
+%%
+
+%% \mmpaper[black]{0}{0}{8}{5}, \xypaper{0}{0}{8}{5}
+%%   draw fine grid in pgf picture so that objects can easily be positioned
+%%   \mmpaper draws cm/mm blocks, while \xypaper is based on (x,y) coordinates
+\newcommand{\mmpaper}[5][black!40!white]{
+  \begin{pgfscope}
+    \color{#1}
+    \pgfsetlinewidth{.2mm}
+    \pgfgrid[step={\pgfpoint{1cm}{1cm}}]{\pgfpoint{#2cm}{#3cm}}{\pgfpoint{#4cm}{#5cm}}
+    \pgfsetlinewidth{.1mm}
+    \pgfgrid[step={\pgfpoint{1mm}{1mm}}]{\pgfpoint{#2cm}{#3cm}}{\pgfpoint{#4cm}{#5cm}}
+  \end{pgfscope}
+}
+\newcommand{\xypaper}[5][black!40!white]{
+  \begin{pgfscope}
+    \color{#1}
+    \pgfsetlinewidth{.2mm}
+    \pgfgrid[step={\pgfxy(1,1)}]{\pgfxy(#2,#3)}{\pgfxy(#4,#5)}
+    \pgfsetlinewidth{.1mm}
+    \pgfgrid[step={\pgfxy(.1,.1)}]{\pgfxy(#2,#3)}{\pgfxy(#4,#5)}
+  \end{pgfscope}
+}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

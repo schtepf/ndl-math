@@ -1,0 +1,31 @@
+%% \documentclass[handout,t]{beamer} % HANDOUT
+%% \documentclass[handout,notes=show,t]{beamer} % NOTES
+\documentclass[t]{beamer} % SLIDES
+\usepackage{etex}
+
+%% make sure these settings are the same as in your presentation!!
+\usetheme{StefanFAU}
+%% \usepackage{beamer-font-lucida}
+%% \usepackage{beamer-font-charter}
+%% \usepackage{beamer-font-arev}
+
+\usepackage{beamer-tools-stefan} % standard packages, definitions and macros
+
+%%%% workspace loads all macro libraries by default
+\input{lib/pgf}   % basic PGF utility functions
+\input{lib/text}  % some macros for typesetting text
+\input{lib/math}  % basic mathematical notation
+\input{lib/stat}  % notation for probability theory and statistics
+\input{lib/vector}% convenience macros for vectors and matrices
+\input{lib/grid}  % grid-like layout of text and graphics in PGF picture
+\input{lib/tree}  % typesetting parse trees with PGF
+\input{lib/chart} % demonstrating chart parsers with PGF
+\input{lib/fl}    % some notation for formal language theory
+
+\input{local/config} % local adjustments to configuration and macros
+
+\begin{document}
+
+\input{pages/new-slide}
+
+\end{document}

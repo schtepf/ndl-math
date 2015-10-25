@@ -1,0 +1,72 @@
+%% \documentclass[handout,t]{beamer} % HANDOUT
+%% \documentclass[handout,notes=show,t]{beamer} % NOTES
+\documentclass[t]{beamer} % SLIDES
+\usepackage{etex}
+
+\usetheme{StefanFAU}                % page themes: StefanPlain, StefanFAU, StefanOsna
+%% \usepackage{beamer-font-lucida}  % commercial Lucida Math font package (recommended)
+%% \usepackage{beamer-font-charter} % commercial Charter Match font package
+%% \usepackage{beamer-font-arev}    % use Arev fonts from TexLive (combine with document option "smaller")
+\usepackage{beamer-tools-stefan}    % standard packages, definitions and macros
+
+%%%% uncomment the following macro libraries as needed
+%% \input{lib/pgf}   % basic PGF utility functions
+%% \input{lib/text}  % some macros for typesetting text
+%% \input{lib/math}  % basic mathematical notation
+%% \input{lib/stat}  % notation for probability theory and statistics
+%% \input{lib/vector}% convenience macros for vectors and matrices
+%% \input{lib/grid}  % grid-like layout of text and graphics in PGF picture
+%% \input{lib/tree}  % typesetting parse trees with PGF
+%% \input{lib/chart} % demonstrating chart parsers with PGF
+%% \input{lib/fl}    % some notation for formal language theory
+
+\input{local/config} % local adjustments to configuration and macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Titlepage
+
+\title[SHORT TITLE]{\textbf{TITLE:}\\
+  SUBTITLE}
+\subtitle{SMALL SUBTITLE}
+\author[S.~Evert]{Stefan Evert}
+\institute[\url{stefan.evert@fau.de}]{%
+  Corpus Linguistics Group, Department Germanistik \& Komparatistik\\
+  Friedrich-Alexander-Universität Erlangen-Nürnberg, Germany\\
+  {\secondary{\url{stefan.evert@fau.de}}}}
+\date{Erlangen, \today}
+
+
+\begin{document}
+
+%% \showLogo  % uncomment to show logo on title page in StefanPlain style
+\frame{\titlepage}
+\hideLogo
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Outline
+
+%% \section*{Outline}
+%% \frame{ 
+%%   \frametitle{Outline}
+%%   \tableofcontents
+%% }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1 
+
+\section{}
+
+\input{pages/new-slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% References (if any)
+
+%% \frame[allowframebreaks]{
+%%   \frametitle{References}
+%%   \bibliographystyle{natbib-stefan}
+%%   \begin{scriptsize}
+%%     \bibliography{stefan-publications,stefan-literature}
+%%   \end{scriptsize}
+%% }
+
+\end{document}

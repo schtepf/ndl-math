@@ -1,0 +1,148 @@
+\ProvidesPackage{beamer-tools-stefan}
+
+%%
+%%  font / input encoding, languages: German and English (default)
+%%
+\usepackage[utf8]{inputenc}
+\usepackage[german,english]{babel}
+\usepackage{stmaryrd}           % currently just used for double brackets in \remark{}
+
+%%
+%%  natbib references (with style settings)
+%%
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+\providecommand{\newblock}{}    % provide \newblock command if not in natbib.sty
+\renewcommand{\bibsection}{}    % no separate section for references
+
+%%
+%%  other required latex packages 
+%%
+\usepackage{ifthen}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage{xcolor}
+\usepackage{colortbl}           % seems to interfere with some other packages
+\usepackage{amsmath,amssymb,amsfonts,amsxtra}
+\usepackage{pifont}
+\usepackage{array,booktabs,hhline}
+\usepackage{xspace}
+
+%%
+%%  commands for my standard colour palette:
+%%    \primary{}, \secondary{}, \counterpoint{}, \foreground{}, \light{}, 
+%%    \purered{}, \puregreen{}, \pureblue{}
+%%
+
+\newcommand<>{\colorwithmath}[1]{\color#2{#1}\only#2{\setbeamercolor{math text inlined}{fg=#1}}}
+
+\newcommand<>{\primary}[1]{{\colorwithmath#2{primary}#1}}
+\newcommand<>{\secondary}[1]{{\colorwithmath#2{secondary}#1}}
+\newcommand<>{\foreground}[1]{{\colorwithmath#2{foreground}#1}}
+\newcommand<>{\counterpoint}[1]{{\colorwithmath#2{counterpoint}#1}}
+\newcommand<>{\fourth}[1]{{\colorwithmath#2{fourth}#1}}
+\newcommand<>{\light}[1]{{\colorwithmath#2{light}#1}}
+\newcommand<>{\purered}[1]{{\colorwithmath#2{purered}#1}}
+\newcommand<>{\puregreen}[1]{{\colorwithmath#2{puregreen}#1}}
+\newcommand<>{\pureblue}[1]{{\colorwithmath#2{pureblue}#1}}
+
+
+%%
+%%  miscellaneous formatting commands
+%%
+
+%% \coloneq (:=) and \eqcolon(=:), unless they're defined by the font package (e.g. Lucida)
+\providecommand{\coloneq}{:=}
+\providecommand{\eqcolon}{=:}
+
+%% add a note to a frame 
+%% (after first overlay by default, may need to change this when showing
+%%  multiple overlays of a slide in the handout version)
+\newcommand{\addnote}[2][1]{\note[item]<#1| handout:#1>{#2}}
+
+%% \TODO, \TODO[something]
+\newcommand{\TODO}[1][]{\alert{\textbf{TODO}%
+    \ifthenelse{\equal{#1}{}}{}{ [#1]}}\xspace}
+
+%% \smilie
+\newcommand{\smilie}{\secondary{\texttt{\bfseries :-)}}\xspace}
+
+%% \h{Text} \hh{Text} (highlight text: primary/secondary colour and bold)
+\newcommand<>{\h}[1]{\textbf#2{\primary#2{#1}}}
+\newcommand<>{\hh}[1]{\textbf#2{\secondary#2{#1}}}
+
+%% \code{result <- binom.test(42, 1e6)} (typewriter font in counterpoint colour)
+\newcommand<>{\code}[1]{\only#2{\texttt{\fourth{#1}}}}
+
+%% <fact> \so <conclusion>, \item[\So]
+\newcommand{\so}{\raisebox{0.1ex}{\scalebox{0.9}[0.8]{\color{structure}\ding{220}}}\xspace}
+\newcommand{\So}{{\color{secondary}\ding{229}}\xspace}
+
+%% <plan A> \vs <plan B>
+\newcommand{\vs}{\structure{vs.{}}\xspace}
+
+%% \textcite{Text}, \textcite[primary]{Text}
+%% (citation, set in serif italic font; default colour is counterpoint)
+\newcommand{\textcite}[2][counterpoint!80!black]{{\colorwithmath{#1}\rmfamily\itshape #2}}
+
+%% \remark{something} (remark in double brackets: [[ something ]])
+\newcommand{\remark}[1]{$\bigl\llbracket${#1}$\bigr\rrbracket$}
+
+%% \gap, \gap[.5], \gap[3]
+%% (a little vertical space [gap between paragraphs], with optional multiplier)
+\newcommand{\gap}[1][1]{\vspace{#1em}}
+
+%% \ungap, \ungap[.5], \ungap[3]
+%% (a little negative vertical space, with optional multiplier)
+\newcommand{\ungap}[1][1]{\vspace{-#1em}}
+
+%% \hide{Text}, \Hide{Text}
+%% (typeset Text invisibly, just as support for desired spacing, or comment out entirely)
+\newcommand{\hide}[1]{\visible<beamer:0| handout:0>{#1}}
+\newcommand{\Hide}[1]{\only<beamer:0| handout:0>{#1}}
+
+%% \itemplus ...  \itemminus ...  \itemhand = \item[\hand] ... 
+%% green plus / red minus / pointing hand as "bullet" in itemize list 
+\newcommand<>{\itemplus}{\item#1[\puregreen{$\boldsymbol{+}$}]}
+\newcommand<>{\itemminus}{\item#1[\purered{$\boldsymbol{-}$}]}
+\newcommand{\hand}{\primary{\ding{43}}}
+\newcommand<>{\itemhand}{\item#1[\ding{43}]}
+
+%% \tickyes ..., \tickno ...
+%% (yes = green tick mark, no = red cross mark)
+\newcommand{\tickyes}{\puregreen{\ding{51}}\xspace}
+\newcommand{\tickno}{\purered{\ding{55}}\xspace}
+
+%% \newimage[width=..., height=...]{filename}
+%% (declare image file with image name = filename)
+\newcommand{\newimage}[2][]{%
+  \pgfdeclareimage[#1,interpolate=true]{#2}{#2}%
+}
+
+%% show image in current pfgpicture (left bottom by default)
+\newcommand<>{\showimage}[2][\pgfxy(0,0)]{%
+  \only#3{%
+    \pgfputat{#1}{\pgfbox[left,bottom]{%
+        \pgfuseimage{#2}}}}%
+}
+
+%% this is just a temporary kludge - need to work out proper definition
+% \newenvironment{indented}{%
+%   \addtolength{\parindent}{2em}%
+%   \par\vspace{.5em}%
+% }{%
+%   \par\vspace{.5em}%
+% }
+
+\newenvironment{indented}{%
+  \gap[.3]%
+  \begin{columns}[T]%
+    \begin{column}{12mm}%
+    \end{column}%
+    \begin{column}{80mm}%
+    }{%
+    \end{column}%
+    \begin{column}{8mm}%
+    \end{column}%
+  \end{columns}%
+  \gap[.3]%
+}

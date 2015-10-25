@@ -1,0 +1,62 @@
+
+  Stefan's Latex Slides Utilities (for latex-beamer)
+  
+
+QUICKSTART
+
+In order to use these utilities, you will have to install the files provided
+in the texmf/ subdirectory in suitable places in your TeX search path (the
+quickest solution is to put them into the directory where you typeset your 
+slides).  If you do not own copies of the commercial Charter Math or Lucida
+Math fonts, you cannot use these font options.
+
+To start work on a new presentation (or set of related presentations), run the
+script "init-slides.perl" that is part of the latex slides utilities, passing
+the (relative or absolut) path to a new working directory for the slides.
+Note that this directory MUST NOT EXIST when you run the initialization
+script.  By default, "init-slides.perl" will install symbolic links to the
+Makefile, utilities and latex macro library.  In order to produce a completely
+self-contained presentation, you can specify the option "--copy", which will
+make copies of these files as well as copy all necessary support files from
+the texmf/ directory to the main presentation directory.
+
+For instance, if you keep your presentations in ~/Slides, you might type
+
+$ perl init-slides.perl --copy ~/Slides/ESSLLI
+
+to create a directory tree for the lecture slides of an ESSLLI course (since
+you are co-teaching this course with another lecturer and want to share the
+slides, you have specified "--copy" to avoid any local dependencies).
+
+
+USAGE
+
+To be written.  Sorry, you're on your own here for now.  Just ask, or look at
+an existing presentation as an example.
+
+It is recommended that you first adjust the file "template.tex" to your
+requirements (presentation style, fonts, etc.), and then start new
+presentations as copies of this file.  The "workspace.tex" allows you
+to easily typeset parts of your presentation while developing it, in order
+to reduce compile time.
+
+"Local" configuration settings can also be made in "local/config.tex" and
+"local/config.mk" (for Makefile settings such as install path for generated
+PDFs).
+
+
+BUGS & FEATURES
+
+The Makefile uses "rubber" to compile the latex sources, which is convenient
+but has its catches.  In recent version of the Makefile, the "natbib"
+compatibility module is automatically loaded (with "rubber -m natbib ...")
+because bibtex references might not be typeset correctly otherwise (rubber
+doesn't seem to recognise that natbib is used).  This may cause an unnecessary
+extra compilation run for documents without bibliographies, but it is the
+easiest and safest solution.
+
+
+Stefan Evert <stefan.evert@uos.de>,
+18 June 2006.
+
+
