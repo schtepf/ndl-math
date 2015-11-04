@@ -35,7 +35,7 @@
   $^2$University of Alberta, Edmonton, Canada\\
   {\secondary{\url{arppe@ualberta.ca}}}
 }
-\date{QITL-6, Tübingen, 6 Nov 2015}
+\date[Tübingen, 6 Nov 2015]{QITL-6, Tübingen, 6 Nov 2015}
 
 
 \begin{document}
@@ -91,11 +91,28 @@
 \input{pages/math-danks-linreg}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 3 
+%% 3 Experiments
 
 % \section{}
 
 % \input{pages/new-slide}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 4 Conclusion
+
+\AtBeginSection[] % because we don't have a subsection here
+{
+  \begin{frame}
+    \frametitle{Outline}
+    \tableofcontents[current]
+  \end{frame}
+}
+
+\section{Conclusion}
+
+\input{pages/conclusion}
+
+\input{pages/acknowledgements}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% References (if any)
