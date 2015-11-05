@@ -11,7 +11,7 @@ X0 <- as.matrix(GerNouns[, -(1:2)]) + 0
 Z0 <- matrix(ifelse(GerNouns$number == "Pl", 1, 0), ncol=1)
 
 ## small example matrix for illustration of mathematical arguments
-Sample <- noun.subset(GerNouns, c("Bäume", "Flasche", "Baum", "Gläser", "Flaschen", "Latte", "Hütten", "Glas", "Bäume"))
+Sample <- noun.subset(GerNouns, c("Bäume", "Flasche", "Baum", "Gläser", "Flaschen", "Latte", "Hütten", "Glas", "Bäume", "Füße"))
 Sample
 
 X <- as.matrix(Sample[, -(1:2)]) + 0
@@ -31,9 +31,10 @@ t.vec <- seq_len(nrow(act.mat)) - 1 # first row = time step 0
 
 for (step in t.vec) {
   idx <- 1:(step + 1)
-  matplot(t.vec[idx], res2[idx, , drop=FALSE], type="b", lty="solid", col=ten.colors, pch=20, lwd=3,
+  matplot(t.vec[idx], act.mat[idx, , drop=FALSE], type="b", lty="solid", col=ten.colors, pch=20, lwd=3,
           xlim=range(t.vec), ylim=c(-.2, .6), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
   abline(h=0, lwd=1)
+  text(idx - .5, -0.19, Sample$word[idx], adj=c(0, 0.5), srt=90, cex=1.2)
   legend("topleft", inset=.02, bg="white", legend=c("-e", "-n", "-s", "umlaut", "dbl cons"), col=ten.colors, lwd=4, cex=1.2)
   dev.copy2pdf(file=sprintf("img/german_plural_rw_step_%d.pdf", step))
 }
@@ -67,6 +68,42 @@ t.vec <- seq_len(nrow(act.mat)) - 1
 matplot(t.vec, act.mat, type="l", lty="solid", lwd=4, col=ten.colors, add=TRUE)
 dev.copy2pdf(file="img/german_plural_exp_rw_final.pdf")
 
+## compute the Danks equilibrium solution
+m <- nrow(X) # number of event tokens in population
+
+fOC <- crossprod(X, Z)                  # co-occurrence frequencies
+fOC   # f(O, C_i)
+fCC <- crossprod(X)
+fCC   # f(C_i, C_j)
+
+pOC <- fOC / m                          # co-occurrence probabilities
+pOC   # P(O, C_i) ... no roudning needed for m == 10
+pCC <- fCC / m
+pCC   # P(C_i, C_j)
+
+round(svd(pCC)$d, 3) # matrix is reasonably well conditioned, i.e. not singular
+
+V.danks <- solve(pCC, pOC) # = (X' X)^{-1} X' o
+n <- length(V.danks)
+x.max <- par("usr")[2]
+points(rep(x.max, n), V.danks, col=ten.colors[1:n], pch=18, cex=3)
+dev.copy2pdf(file="img/german_plural_exp_rw_danks.pdf")
+
+act.mat <- rw.expected(X, Z, 500, beta=.2)
+t.vec <- seq_len(nrow(act.mat)) - 1
+matplot(t.vec, act.mat, type="l", lty="solid", lwd=4, col=ten.colors, xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
+abline(h=0, lwd=1)
+x.max <- par("usr")[2]
+points(rep(x.max, n), V.danks, col=ten.colors[1:n], pch=18, cex=3)
+dev.copy2pdf(file="img/german_plural_exp_rw_danks_500.pdf")
+
+## and compare with least-squares regression
+V.lm <- lm.fit(X, Z)$coefficients
+round(rbind(LM=V.lm, Danks=drop(V.danks)), 5) # identical
+
+SampleLM <- transform(Sample, Outcom=as.numeric(number == "Pl"), suff_e=as.numeric(suff_e), suff_n=as.numeric(suff_n), suff_s=as.numeric(suff_s), umlaut=as.numeric(umlaut), double_cons=as.numeric(double_cons), background=as.numeric(background))
+res <- lm((number == "Pl") ~ suff_e + suff_n + suff_s + umlaut + double_cons + background - 1, data=SampleLM)
+round(rbind(LM=V.lm, Danks=drop(V.danks), LM2=res$coefficients), 5) # identical
 
 
 
