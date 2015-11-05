@@ -17,24 +17,24 @@ Sample
 X <- as.matrix(Sample[, -(1:2)]) + 0
 Z <- matrix(ifelse(Sample$number == "Pl", 1, 0), ncol=1)
 
-## R-W learning with the simplified Widrow-Hoff rule (beta = .2)
-res <- rw.updates(X, Z, beta1=.2, show.activation=TRUE)
-round(res, 3)
-
 ## plot R-W learning curves in 16:10 aspect ratio
 quartz(width=8, height=5)
 par(mar=c(2,4,1,1)+.1)
 
+## R-W learning with the simplified Widrow-Hoff rule (beta = .2)
+res <- rw.updates(X, Z, beta1=.2, show.activation=TRUE)
+round(res, 3)
+
 ## incremental visualization with matplot
 act.mat <- res[, 1:5] + rep(seq(0, .01, length.out=5), each=nrow(res)) # activation levels with small shifts to avoid overplotting
-t.vec <- seq_len(nrow(act.mat)) - 1 # first row = time step 0
+t.vec <- seq_len(nrow(act.mat)) # first row = activations at time step 1 (will be updated by first event)
 
 for (step in t.vec) {
-  idx <- 1:(step + 1)
+  idx <- 1:step
   matplot(t.vec[idx], act.mat[idx, , drop=FALSE], type="b", lty="solid", col=ten.colors, pch=20, lwd=3,
-          xlim=range(t.vec), ylim=c(-.2, .6), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
+          xlim=range(t.vec), ylim=c(-.2, .6), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), lab=c(10,5,7), las=1)
   abline(h=0, lwd=1)
-  text(idx - .5, -0.19, Sample$word[idx], adj=c(0, 0.5), srt=90, cex=1.2)
+  text(idx + .5, -0.19, Sample$word[idx], adj=c(0, 0.5), srt=90, cex=1.2)
   legend("topleft", inset=.02, bg="white", legend=c("-e", "-n", "-s", "umlaut", "dbl cons"), col=ten.colors, lwd=4, cex=1.2)
   dev.copy2pdf(file=sprintf("img/german_plural_rw_step_%d.pdf", step))
 }
@@ -44,7 +44,7 @@ for (step in list(list(b=.5,n=200,l="b050_n200"), list(b=.2,n=200,l="b020_n200")
   set.seed(42) # use same sequence for all plots
   act.mat <- rw.updates(X, Z, beta1=step$b, sample=step$n)
   t.vec <- seq_len(nrow(act.mat)) - 1
-  matplot(t.vec, act.mat, type="l", lty="solid", lwd=3, col=ten.colors, ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
+  matplot(t.vec, act.mat, type="l", lty="solid", lwd=3, col=ten.colors, ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), las=1)
   abline(h=0, lwd=1)
   legend("topleft", legend=bquote(beta == .(step$b)), bty="n", cex=1.4)
   dev.copy2pdf(file=sprintf("img/german_plural_rw_%s.pdf", step$l))
@@ -56,7 +56,7 @@ for (step in 1:5) {
   act.mat <- rw.updates(X, Z, beta1=0.2, sample=150)
   t.vec <- seq_len(nrow(act.mat)) - 1
   if (step == 1) {
-    plot(0, 0, type="n", xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
+    plot(0, 0, type="n", xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), las=1)
     abline(h=0, lwd=1)
     legend("topleft", legend=bquote(beta == 0.2), bty="n", cex=1.4)
   }
@@ -91,7 +91,7 @@ dev.copy2pdf(file="img/german_plural_exp_rw_danks.pdf")
 
 act.mat <- rw.expected(X, Z, 500, beta=.2)
 t.vec <- seq_len(nrow(act.mat)) - 1
-matplot(t.vec, act.mat, type="l", lty="solid", lwd=4, col=ten.colors, xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])))
+matplot(t.vec, act.mat, type="l", lty="solid", lwd=4, col=ten.colors, xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), las=1)
 abline(h=0, lwd=1)
 x.max <- par("usr")[2]
 points(rep(x.max, n), V.danks, col=ten.colors[1:n], pch=18, cex=3)
@@ -104,6 +104,7 @@ round(rbind(LM=V.lm, Danks=drop(V.danks)), 5) # identical
 SampleLM <- transform(Sample, Outcom=as.numeric(number == "Pl"), suff_e=as.numeric(suff_e), suff_n=as.numeric(suff_n), suff_s=as.numeric(suff_s), umlaut=as.numeric(umlaut), double_cons=as.numeric(double_cons), background=as.numeric(background))
 res <- lm((number == "Pl") ~ suff_e + suff_n + suff_s + umlaut + double_cons + background - 1, data=SampleLM)
 round(rbind(LM=V.lm, Danks=drop(V.danks), LM2=res$coefficients), 5) # identical
+
 
 
 
