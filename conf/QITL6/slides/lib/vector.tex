@@ -5,7 +5,7 @@
 %% \Vector[i]{x} ... vector variable with optional _superscript_ index in parentheses
 %% \Vector[']{x} ... special case: ' superscript not enclosed in parentheses
 %% \vx, \vy, \vz ... abbreviations for common vector names
-\newcommand{\Vector}[2][]{\vec{#2}\ifthenelse{\equal{#1}{}}{}{^{(#1)}}}
+\newcommand{\Vector}[2][]{\mathbf{#2}\ifthenelse{\equal{#1}{}}{}{^{(#1)}}}
 \newcommand{\vx}[1][]{\Vector[#1]{x}}
 \newcommand{\vy}[1][]{\Vector[#1]{y}}
 \newcommand{\vz}[1][]{\Vector[#1]{z}}
@@ -16,6 +16,10 @@
 \newcommand{\vb}[1][]{\Vector[#1]{b}} % for basis
 \newcommand{\ve}[1][]{\Vector[#1]{e}} % for standard basis of R^n
 \newcommand{\vn}[1][]{\Vector[#1]{n}} % normal vector
+\newcommand{\vc}[1][]{\Vector[#1]{c}}
+\newcommand{\vX}[1][]{\Vector[#1]{X}} % matrices
+\newcommand{\vC}[1][]{\Vector[#1]{C}}
+\newcommand{\vo}[1][]{\Vector[#1]{o}}
 \newcommand{\vnull}[1][]{\Vector[#1]{0}} % neutral element
 
 %% \Span{\vb[1],\ldots,\vb[k]} ... span of set of vectors
