@@ -1,6 +1,89 @@
 \begin{frame}
-  \frametitle{}
+  \frametitle{Effects of R-W parameters}
   %% \framesubtitle{}
+
+  \begin{description}
+  \item<1->[$\beta > 0$:] learning rate \so convergence of individual learners
+  \item<2->[$\lambda \neq 1$:]\gap[.5] linear scaling of association / activation (obvious)
+  \item<3->[$\alpha_i\neq 1$:]\gap[.5] salience of cue $C_i$ determines how fast associations are learned, but does not affect the final stable associations (same $L_2$ regression problem)
+  \item<4->[$\beta_1 \neq \beta_2$:]\gap[.5] different positive/negative learning rates \emph{do} affect the stable associations; closely related to prevalence of positive and negative events in the population
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What about logistic regression?}
+  %% \framesubtitle{}
+
+  \begin{columns}[T]
+    \begin{column}{6cm}
+      Logistic regression is the standard tool for predicting a categorical response from binary features 
+      \begin{itemize}
+      \item<1-> can be expressed as SLP with probabilistic interpretation
+      \item<2-> uses logistic activation function
+        \[
+        h(y) = \frac{1}{1 + e^{-y}}
+        \]
+      \item<3-> and Bernoulli cost
+        \[
+        E(\vw, \vx, z) = \begin{cases}
+          -\log h(y) & \text{if } z = 1 \\
+          -\log (1 - h(y)) & \text{if } z = 0
+        \end{cases}
+        \]
+      \end{itemize}
+    \end{column}
+    \begin{column}{5cm}
+      \begin{tikzpicture}
+        \node[functions] (center) {};
+        \node[below=0.5em of center,font=\scriptsize,text width=3.4em] {activation function $h$};
+        \draw (0em,0.75em) -- (0em,-0.75em);
+        \draw (0.75em,0em) -- (-0.75em,0em);
+        \only<beamer:1| handout:0>{
+          \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
+        }
+        \only<beamer:2-| handout:0>{
+          \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
+        }
+        \node[right of=center] (right) {};
+        \path[flow] (center) -- (right);
+        \node[functions,left=1.5em of center] (left) {$\sum$};
+        \path[flow] (left) -- (center);
+        \node[weights,above left=0.5em and 2em of left] (2) {$w_2$} -- (2) node[input,left=1em of 2] (l2) {$x_2$};
+        \path[flow] (l2) -- (2);
+        \path[flow] (2) -- (left);
+        \node[below of=2] (dots) {$\vdots$} -- (dots) node[left of=dots] (ldots) {$\vdots$};
+        \node[weights,below of=dots] (n) {$w_n$} -- (n) node[input,left=1em of n] (ln) {$x_n$};
+        \path[flow] (ln) -- (n);
+        \path[flow] (n) -- (left);
+        \node[weights,above of=2] (1) {$w_1$} -- (1) node[input,left=1em of 1] (l1) {$x_1$};
+        \path[flow] (l1) -- (1);
+        \path[flow] (1) -- (left);
+        \node[below=1.5em of ln.center,font=\scriptsize] {inputs};
+        \node[below=1.5em of n.center,font=\scriptsize] {weights};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{What about logistic regression?}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item Gradient descent training leads to delta rule that corresponds to a modified version of the R-W equations
+    \[
+    \Delta V_i =
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      \delta \left( 1 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 1 \\
+      \delta \left( 0 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 0
+    \end{cases}
+    \]
+  \item<2-> Same as original R-W, except that activation level is now transformed into probability $h(y)$
+  \item<2-> But no easy way to analyze stochastic learning process\\
+    (batch training $\neq$ expected value of single-item training)
+  \item<2-> Less robust for highly predictable outcomes \so $\vw$ diverges
+  \end{itemize}
 \end{frame}
 
 %%% Local Variables: 
