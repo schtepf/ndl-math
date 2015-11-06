@@ -26,7 +26,7 @@ res <- rw.updates(X, Z, beta1=.2, show.activation=TRUE)
 round(res, 3)
 
 ## incremental visualization with matplot
-act.mat <- res[, 1:5] + rep(seq(0, .01, length.out=5), each=nrow(res)) # activation levels with small shifts to avoid overplotting
+act.mat <- res[, 1:6] + rep(seq(0, .012, length.out=6), each=nrow(res)) # activation levels with small shifts to avoid overplotting
 t.vec <- seq_len(nrow(act.mat)) # first row = activations at time step 1 (will be updated by first event)
 
 for (step in t.vec) {
@@ -35,7 +35,7 @@ for (step in t.vec) {
           xlim=range(t.vec), ylim=c(-.2, .6), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), lab=c(10,5,7), las=1)
   abline(h=0, lwd=1)
   text(idx + .5, -0.19, Sample$word[idx], adj=c(0, 0.5), srt=90, cex=1.2)
-  legend("topleft", inset=.02, bg="white", legend=c("-e", "-n", "-s", "umlaut", "dbl cons"), col=ten.colors, lwd=4, cex=1.2)
+  legend("topleft", inset=.02, bg="white", legend=c("-e", "-n", "-s", "umlaut", "dbl cons", "bgrd"), col=ten.colors, lwd=4, cex=1.2)
   dev.copy2pdf(file=sprintf("img/german_plural_rw_step_%d.pdf", step))
 }
 
