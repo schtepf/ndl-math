@@ -156,18 +156,38 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{}
+  \frametitle{A stochastic NDL learner}
   %% \framesubtitle{}
+
+  \begin{itemize}
+  \item<1-> A specific event sequence $(\vc[t], o\psupt)$ will only be encountered in controlled experiments
+  \item<2-> For applications in corpus linguistics, it is more plausible to assume that events are randomly sampled from a population of \primary{event tokens} $(\vc[k], o\psup{k})$ for $k = 1, \ldots, m$
+    \begin{itemize}
+    \item[\hand] event types listed repeatedly proportional to their frequency
+    \end{itemize}
+  \item<3-> I.i.d.\ random variables $\vc[t] \sim \vc$ and $o\psupt\sim o$
+    \begin{itemize}
+    \item[\hand] distributions of $\vc$ and $o$ determined by population
+    \end{itemize}
+  \item<3-> NDL can now be trained for arbitrary number of time steps, even if population is small (as in our example)
+    \begin{itemize}
+    \item study asymptotic behaviour of learners
+    \item convergence \so stable ``adult'' state of associations
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{}
-  %% \framesubtitle{}
-\end{frame}
+\begin{frame}[c]
+  \frametitle{A stochastic NDL learner}
+  \framesubtitle{Effect of the learning rate $\beta$}
 
-\begin{frame}
-  \frametitle{}
-  %% \framesubtitle{}
+  \centering\ungap[1]
+  \only<beamer:1| handout:1>{\includegraphics[width=11cm]{img/german_plural_rw_b050_n200}}%
+  \only<beamer:2| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b020_n200}}%
+  \only<beamer:3| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b010_n200}}%
+  \only<beamer:4| handout:1>{\includegraphics[width=11cm]{img/german_plural_rw_b005_n200}}%
+  \only<beamer:5| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b001_n200}}%
+  \only<beamer:6| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b001_n2000}}%
 \end{frame}
 
 %%% Local Variables: 
