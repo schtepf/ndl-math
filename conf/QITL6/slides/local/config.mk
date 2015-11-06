@@ -6,5 +6,5 @@
 FILES := qitl6_evert_arppe.pdf
 
 ## directory where generated PDF documents can be installed
-# INSTALL_DIR := ../pdf
+INSTALL_DIR := ../
 

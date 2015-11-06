@@ -2,7 +2,7 @@
 ## First experiments with German noun plurals
 ##
 
-source("utilities.R")
+source("../utilities.R")
 load("GerNouns.rda", verbose=TRUE)
 GerNouns$background <- TRUE
 
