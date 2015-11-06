@@ -3,7 +3,7 @@
 
   \begin{itemize}
 
-  \item  Arppe \& J{\"a}rvikivi 2007
+  \item  Arppe \& J{\"a}rvikivi (2002, 2007)
 
   \item \textit{Person} (FIRST PERSON SINGULAR or not) and
     \textit{Countability} (COLLECTIVE or not) of AGENT/SUBJECT of
@@ -88,6 +88,40 @@ Dispreferred  & Preferred     & (relative) & Unacceptable  & Acceptable  \\ \hli
 
   \includegraphics[width=8cm]{{{img/THINK.maximal_linguistic_variable_density}}}
   
+\end{frame}
+
+\begin{frame}
+\frametitle{Comparison of statistical methods -- Classification Accuracy \& Recall}
+
+% latex table generated in R 2.15.0 by xtable 1.7-0 package
+% Thu May 24 17:10:59 2012
+\begin{table}[ht]
+\begin{center}
+{\footnotesize
+\begin{tabular}{lrrr}
+  \hline
+ & $\lambda_{\mbox{\tiny prediction}}$ & $\tau_{\mbox{\tiny classification}}$ & Accuracy \\ 
+  \hline
+Polytomous logistic regression & 0.447 & 0.516 & 0.646 \\ 
+  (One-vs-rest) &  &  &  \\ 
+  Polytomous mixed logistic regression &  &  &  \\ 
+  (Poisson reformulation) &  &  &  \\ 
+  1|Register & 0.435 & 0.505 & 0.638 \\ 
+  1|Genre & 0.433 & 0.504 & 0.637 \\ 
+  1|Lexeme & 0.428 & 0.499 & 0.634 \\ 
+  1|Register + 1|Lexeme & 0.431 & 0.502 & 0.636 \\ 
+  Support Vector Machine & 0.414 & 0.487 & 0.625 \\ 
+  Memory-Based Learning & 0.287 & 0.376 & 0.543 \\ 
+  (TiMBL) &  &  &  \\ 
+  Random Forests & 0.445 & 0.515 & 0.645 \\ 
+  Naive Discriminative Learning & 0.442 & 0.511 & 0.642 \\ 
+   \hline
+\end{tabular}
+}
+\caption{Classification diagnostics for five models fitted to the English data set ($n=909$).}
+\label{tab:results}
+\end{center}
+\end{table}
 \end{frame}
 
 %%% Local Variables: 
