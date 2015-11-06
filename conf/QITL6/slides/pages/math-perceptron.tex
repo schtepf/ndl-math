@@ -1,3 +1,84 @@
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=faugold!10}}
+\tikzset{basic/.style={draw,fill=faublue!10,text width=1em,text badly centered}}
+\tikzset{flow/.style={draw,-{>[scale=1.2]}}}
+
+\begin{frame}
+  \frametitle{The single-layer perceptron (SLP)}
+  %% \framesubtitle{}
+
+  \begin{columns}[c]
+    \begin{column}{6cm}
+      SLP \citep{Rosenblatt:58} is most basic feed-forward \primary{neural network}
+      \begin{itemize}
+      \item<1-> numeric inputs $x_1, \ldots, x_n$
+      \item<1-> output activation $h(y)$ based on weighted sum of inputs
+        \[
+        y = \textstyle\sum_{j=1}^n w_j x_j
+        \]
+      \item<2-> $h$ = Heaviside step function in traditional SLP
+      \item<3-> even simpler model: $h(y) = y$
+      \item<4-> cost wrt.\ target output $z$:
+        \[
+        E(\vw, \vx, z) = \left( z - \textstyle\sum_{j=1}^n w_j x_j \right)^2
+        \]
+      \end{itemize}
+    \end{column}
+    \begin{column}{5cm}
+      \begin{tikzpicture}
+        \node[functions] (center) {};
+        \node[below=0.5em of center,font=\scriptsize,text width=3.4em] {activation function $h$};
+        \draw (0em,0.75em) -- (0em,-0.75em);
+        \draw (0.75em,0em) -- (-0.75em,0em);
+        \only<beamer:1-2| handout:0>{
+          \draw[very thick, color=primary] (0.7em,0.5em) -- (0,0.5em) -- (0,-0.5em) -- (-0.7em,-0.5em);
+        }
+%%        \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
+        \only<beamer:3-| handout:0>{
+          \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
+        }
+        \node[right of=center] (right) {};
+        \path[flow] (center) -- (right);
+        \node[functions,left=1.5em of center] (left) {$\sum$};
+        \path[flow] (left) -- (center);
+        \node[weights,above left=0.5em and 2em of left] (2) {$w_2$} -- (2) node[input,left=1em of 2] (l2) {$x_2$};
+        \path[flow] (l2) -- (2);
+        \path[flow] (2) -- (left);
+        \node[below of=2] (dots) {$\vdots$} -- (dots) node[left of=dots] (ldots) {$\vdots$};
+        \node[weights,below of=dots] (n) {$w_n$} -- (n) node[input,left=1em of n] (ln) {$x_n$};
+        \path[flow] (ln) -- (n);
+        \path[flow] (n) -- (left);
+        \node[weights,above of=2] (1) {$w_1$} -- (1) node[input,left=1em of 1] (l1) {$x_1$};
+        \path[flow] (l1) -- (1);
+        \path[flow] (1) -- (left);
+        \node[below=1.5em of ln.center,font=\scriptsize] {inputs};
+        \node[below=1.5em of n.center,font=\scriptsize] {weights};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{SLP training: the delta rule}
+  %% \framesubtitle{}
+  \begin{itemize}
+  \item SLP weights are learned by \primary{gradient descent} training:\\
+    for a single training item $(\vx, z)$ and learning rate $\delta > 0$
+    \begin{align*}
+      \Delta w_i &= -\delta \frac{\partial E(\vw, \vx, z)}{\partial w_i} \\
+      \only<beamer:1-2| handout:0>{\visible<2->{&= -\delta \frac{\partial}{\partial w_i} \left( z - \sum_{j=1}^n w_j x_j \right)^2 \\}}
+      \only<beamer:3-4| handout:0>{&= -2\delta \left( z - \sum_{j=1}^n w_j x_j \right)^2 (-x_i) \\}
+      \only<beamer:5-| handout:1>{&= 2\delta x_i \left( z - \sum_{j=1}^n x_ j w_j \right)^2 \\}
+      \visible<4->{&= \secondary{\beta c_i \bigl( o - \textstyle\sum_{j=1}^n c_j V_j \bigr)}}
+    \end{align*}
+  \item<6-> Perfect \primary{correspondence to W-H rule} with
+    \[
+    V_i = w_i \qquad c_i = x_i \qquad o = z \qquad \beta = 2\delta
+    \]
+  \end{itemize}
+\end{frame}
+
 \begin{frame}
   \frametitle{}
   %% \framesubtitle{}
