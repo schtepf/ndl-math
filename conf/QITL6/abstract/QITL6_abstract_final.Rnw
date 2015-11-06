@@ -317,7 +317,7 @@ plot(RescorlaWagner(think.ndl$cuesOutcomes, "PatientDirectQuote", "ajatella",nru
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.5in]{QITL6_abstract_final-think_conv.pdf}
+\includegraphics[width=2.5in]{QITL6_abstract_final-think_conv.png}
 \caption{Simulation results for a Finnish \textsc{think} dataset with selected linguistic contextual features (cues) and verbs (outcomes), using (i) R-W learning within a randomized version of the original dataset (3404 datapoints) (ii) R-W learning with a non-randomized version of the dataset (3404 datapoints), and (iii) R-W learning with a 10-fold, randomized multiple of the dataset (altogether 34040 datapoints). R-W cue-outcome association values presented with a solid line; corresponding equilibrium association values with a dotted line.}
 \label{think_weights}
 \end{figure}
@@ -338,7 +338,7 @@ plot(RescorlaWagner(plurals, traceCue="s", traceOutcome="as", nruns=200), main="
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.5in]{QITL6_abstract_final-plurals_conv.pdf}
+\includegraphics[width=2.5in]{QITL6_abstract_final-plurals_conv.png}
 \caption{Simulation results for a tiny, artificial dataset on English nouns and their pluralizations (10 types with 419 tokes), with selected orthographical unigraph features (cues) and lemmas (outcomes), using R-W learning with a 200-fold, randomized version of the dataset \cite[Extension of Fig. 4]{baayenetal2011}. R-W cue-outcome association values presented with a solid line; corresponding equilibrium association values with a dotted line.}
 \label{plural_weights}
 \end{figure}
