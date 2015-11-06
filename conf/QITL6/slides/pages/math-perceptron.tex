@@ -80,8 +80,57 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{}
+  \frametitle{Batch training}
   %% \framesubtitle{}
+
+  \begin{itemize}
+  \item Neural networks often use \primary{batch training}, where all training data are considered at once instead of one item at a time
+  \item The corresponding batch training cost is
+    \begin{align*}
+    E(\vw) &= \frac{1}{m} \sum_{k=1}^m E(\vw, \vx[k], z\psup{k}) \\
+    \visible<3->{ &= \frac{1}{m} \sum_{k=1}^m \left( z\psup{k} - \textstyle\sum_{j=1}^n w_j x_j\psup{k} \right)^2 }
+    \end{align*}
+  \item<2-> Similar to stochastic NDL, batch training computes the expected weights $\bigExp{\vw\psupt}$ for SLP with stochastic input
+  \item<3-> Minimization of $E(\vw)$ = linear \primary{least-squares regression}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linear least-squares regression}
+  %% \framesubtitle{}
+  
+  \begin{itemize}
+  \item Matrix formulation of the linear least-squares problem:
+    \begin{align*}
+      E(\vw) &= \frac{1}{m} \sum_{k=1}^m \left( z\psup{k} - \textstyle\sum_{j=1}^n w_j x_j\psup{k} \right)^2 \\
+      \visible<2->{ &= \frac{1}{m} \bigl( \vz - \vX \vw \bigr)^T \bigl( \vz - \vX \vw \bigr) }
+    \end{align*}
+  \item<3-> Minimum of $E(\vw)$, the $L_2$ solution, must satisfy $\nabla E(\vw^*) = \vnull$, which leads to the \primary{normal equations}
+    \[
+    \vX^T \vz = \vX^T \vX \vw^*
+    \]
+  \item<4-> Normal equations = Danks equilibrium conditions
+  \item<5-> Regression theory shows that batch training / stochastic NLP converges to the unique$^{\primary{*}}$ solution of the $L_2$ problem
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{What have we learned?}
+  %% \framesubtitle{}
+
+  \begin{center}
+    \setlength{\fboxrule}{1pt}
+    \fcolorbox{secondary}{faugold!10!white}{
+      \begin{tabular}{c c c c c}
+        stochastic &=& batch &=& $L_2$ regression \\[1ex]
+        NDL &=& SLP
+      \end{tabular}
+    }
+  \end{center}
+  \begin{itemize}
+  \item[\hand] These equivalences also hold for the general R-W equations with arbitrary values of $\alpha_i$, $\beta_1$, $\beta_2$ and $\lambda$ (see paper)
+  \end{itemize}
+  
 \end{frame}
 
 %%% Local Variables: 
