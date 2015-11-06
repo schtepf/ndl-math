@@ -46,7 +46,7 @@
         \node[weights,above left=0.5em and 2em of left] (2) {$w_2$} -- (2) node[input,left=1em of 2] (l2) {$x_2$};
         \path[flow] (l2) -- (2);
         \path[flow] (2) -- (left);
-        \node[below of=2] (dots) {$\vdots$} -- (dots) node[left of=dots] (ldots) {$\vdots$};
+        \node[below of=2] (dots) {$\vdots$} -- (dots) node[below of=l2] (ldots) {$\vdots$};
         \node[weights,below of=dots] (n) {$w_n$} -- (n) node[input,left=1em of n] (ln) {$x_n$};
         \path[flow] (ln) -- (n);
         \path[flow] (n) -- (left);
@@ -69,8 +69,8 @@
     \begin{align*}
       \Delta w_i &= -\delta \frac{\partial E(\vw, \vx, z)}{\partial w_i} \\
       \only<beamer:1-2| handout:0>{\visible<2->{&= -\delta \frac{\partial}{\partial w_i} \left( z - \sum_{j=1}^n w_j x_j \right)^2 \\}}
-      \only<beamer:3-4| handout:0>{&= -2\delta \left( z - \sum_{j=1}^n w_j x_j \right)^2 (-x_i) \\}
-      \only<beamer:5-| handout:1>{&= 2\delta x_i \left( z - \sum_{j=1}^n x_ j w_j \right)^2 \\}
+      \only<beamer:3-4| handout:0>{&= -2\delta \left( z - \sum_{j=1}^n w_j x_j \right) (-x_i) \\}
+      \only<beamer:5-| handout:1>{&= 2\delta x_i \left( z - \sum_{j=1}^n x_ j w_j \right) \\}
       \visible<4->{&= \secondary{\beta c_i \bigl( o - \textstyle\sum_{j=1}^n c_j V_j \bigr)}}
     \end{align*}
   \item<6-> Perfect \primary{correspondence to W-H rule} with
