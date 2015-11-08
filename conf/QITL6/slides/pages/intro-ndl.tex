@@ -2,125 +2,102 @@
   \frametitle{Objectives}
 
   \begin{itemize}
+  \item Explain the mathematical foundations of Naïve Discriminative Learning (NDL) in one place and in a consistent way
+  \item Highlight the theoretical similarities of NDL with linear/logistic regression and the single-layer perceptron
+  \item Present some empirical simulations of stochastic NDL learners, in light of the theoretical insights
+  \end{itemize}
+\end{frame}
 
-  \item Present the mathematic underpinnings of NDL in one place, in a systematic way
-
-  \item High-light the theoretical similarities of NDL with linear/logistic regression and perceptron
-
-  \item Present some empirical simulations of NDL, in light of the theory
-    
+\begin{frame}
+  \frametitle{Naïve Discriminative Learning}
+  
+  \begin{itemize}
+  \item \citet{Baayen:11,Baayen:etc:11}
+  \item Incremental learning equations for direct associations between cues and outcomes \citep{Rescorla:Wagner:72} 
+  \item Equilibrium conditions \citep{Danks:03}
+  \item Implementation as R package \texttt{ndl} \citep{Arppe:etc:14}
   \end{itemize}
   
+  \gap[1]
+  \begin{description}[Discriminative:]
+   \item[Naive:] cue-outcome associations estimated separately for
+    each outcome (this independence assumption is similar to
+    a naive Bayesian classifier)
+  \item[Discriminative:] cues predict outcomes based on total activation level
+    = sum of direct cue-outcome associations
+  \item[Learning:] incremental learning of association strengths
+  \end{description}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Naive Discriminative Learning}
-  
+  \frametitle{The Rescorla-Wagner equations (1972)}
+
+  Represent incremental associative learning and subsequent on-going
+  adjustments to an accumulating body of knowledge.
+
+  \gap[1]
+  Changes in cue-outcome association strengths:
   \begin{itemize}
-  
-  \item Baayen et al. 2011; Baayen 2011
-
-  \item Rescorla-Wagner (1972) incremental learning equations
-
-  \item Danks (2003) equilibrium equations
-
-  \item Implementation as an R package \texttt{ndl}: Arppe et
-    al. 2011; Shaoul et al. 2013
-
-\end{itemize}    
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Rescorla-Wagner equations (1972) -- verbally}
-
-Represent incremental learning and subsequently on-going adjustments
-to an accumulating body of knowledge:
-
-Changes in association strengths:
-\begin{itemize}
-	\item If a cue is not present in the input, no change
-	\item Increased when the cue and outcome co-occur
-	\item Decreased when the cue occurs without the outcome
-	\item The more cues are present simultaneously, the smaller the adjustments are 
-\end{itemize}
-
-Only the results of the incremental adjustments to the cue-outcome
-associations are kept -- no need for remembering the individual
-adjustments, however many there are.
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Danks (2003) equilibrium equations -- verbally} 
-
-  \begin{itemize}
-
-  \item presume an ideal `adult/stable' state where all the
-    cue-outcome associations have been fully learnt -- any more data
-    points bring nothing `new' to learn, i.e. have zero impact on the
-    cue-outcome associations.
-    
-  \item make it possible to estimate the weights for a system using
-    relatively simple matrix algebra.
-
-  \item provide a convenient short-cut to calculating the
-    consolidated cue-outcome association weights resulting from
-    incremental learning.
-
-  \item the learning parameters of the Rescorla-Wagner equations drop
-    out of the equilibrium equations.
-
-  \item circumvent the problem that a simulation of an Rescorla-Wagner
-    learner does not converge to a single state unless the learning
-    rate is gradually decreased.
-    
-\end{itemize}
-
-\end{frame}
- 
-\begin{frame}
-  \frametitle{Naive Discriminative Learning}
-
-  \begin{itemize}
-
-  \item Naive: cue-outcome associations estimatated separately for
-    each outcome (this simplifying assumption of independence similar to
-    a naive Bayesian classifier).
-
-  \item Discriminative: direct associations with each outcome given a set of cues.
-
-  \item Learning: based on incremental learning.
-
+  \item No change if a cue is not present in the input
+  \item Increased if the cue and outcome co-occur
+  \item Decreased if the cue occurs without the outcome
+  \item If outcome can already be predicted well (based on all input cues),
+    adjustments become smaller
   \end{itemize}
 
+  \gap[1] 
+  Only results of incremental adjustments to the cue-outcome associations are
+  kept -- no need for remembering the individual adjustments, however many
+  there are.
 \end{frame}
 
 \begin{frame}
-  \frametitle{Rescorla-Wagner equations -- traditional vs. linguistic
-    applications}
+  \frametitle{Danks (2003) equilibrium conditions} 
 
   \begin{itemize}
+  \item Presume an ideal stable ``adult'' state, where all cue-outcome
+    associations have been fully learnt -- further data points should then
+    have no impact on the cue-outcome associations
+  \item Provide a convenient short-cut to calculating the final cue-outcome
+    association weights resulting from incremental learning, using relatively
+    simple matrix algebra
+  \item Most learning parameters of the Rescorla-Wagner equations drop
+    out of the Danks equilibrium equation
+  \item Circumvent the problem that a simulation of an R-W learner does
+    usually not converge to a stable state unless the learning rate is
+    gradually decreased
+  \end{itemize}
+\end{frame}
 
-  \item traditionally: simple controlled experiments on item-by-item
-    learning, with only a couple of cues and some perfect associations.
+\begin{frame}
+  \frametitle{Traditional \vs linguistic applications of R-W}
 
-  \item natural language: full of choices among multiple possible
-    alternatives -- phones, words, or constructions -- which are
-    influenced by a large number of contextual factors, and which
-    rather exhibit asymptotic, imperfect tendencies favoring one or
-    more of the alternatives, instead of single, categorical, perfect
-    choices.
+  \begin{itemize}
+  \item Traditionally: simple controlled experiments on item-by-item
+    learning, with only a handful of cues and perfect associations
+  \item Natural language: full of choices among multiple possible alternatives
+    -- phones, words, or constructions -- which are influenced by a large
+    number of contextual factors, and which often show weak to moderate 
+    tendencies towards one or more of the alternatives rather than a
+    single unambiguous decision
+  \item These messy, complex types of problems are a key area of interest in
+    modeling and understanding language use
+  \item Application of R-W in the form of a Naïve Discriminative Learner to
+    such linguistic classification problems is sucessful in practice and can 
+    throw new light on research questions
+  \end{itemize}
+\end{frame}
 
-  \item these messy, complex types of problems as a key area of
-    interest in modeling and understanding language use.
+\begin{frame}
+  \frametitle{Related work}
 
-  \item the application of the Rescorla-Wagner equations in the form
-    of a Naive Discriminative Learning classifier to such linguistic
-    phenomena of considerable utility.
-    
-\end{itemize}
-
+  \begin{itemize}
+  \item R-W \vs perceptron \citep[p.~155f]{Sutton:Barto:81}
+  \item R-W \vs least-squares regression \citep[p.~457]{Stone:86}
+  \item R-W \vs logistic regression \citep[p.~234]{Gluck:Bower:88}
+  \item R-W \vs neural networks \citep{Dawson:08}
+  \item[\hand] similarities are also mentioned by many other authors \ldots
+  \end{itemize}
 \end{frame}
 
 %%% Local Variables: 

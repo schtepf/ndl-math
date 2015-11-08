@@ -36,7 +36,7 @@
           \draw[very thick, color=primary] (0.7em,0.5em) -- (0,0.5em) -- (0,-0.5em) -- (-0.7em,-0.5em);
         }
 %%        \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
-        \only<beamer:3-| handout:0>{
+        \only<beamer:3-| handout:1>{
           \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
         }
         \node[right of=center] (right) {};
@@ -91,7 +91,7 @@
     E(\vw) &= \frac{1}{m} \sum_{k=1}^m E(\vw, \vx[k], z\psup{k}) \\
     \visible<3->{ &= \frac{1}{m} \sum_{k=1}^m \left( z\psup{k} - \textstyle\sum_{j=1}^n w_j x_j\psup{k} \right)^2 }
     \end{align*}
-  \item<2-> Similar to stochastic NDL, batch training computes the expected weights $\bigExp{\vw\psupt}$ for SLP with stochastic input
+  \item<2-> Similar to stochastic NDL, batch training computes the expected weights $\bigExp{\vw\psupt}$ for an SLP with stochastic input
   \item<3-> Minimization of $E(\vw)$ = linear \primary{least-squares regression}
   \end{itemize}
 \end{frame}
