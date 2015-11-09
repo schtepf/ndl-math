@@ -57,29 +57,6 @@ Dispreferred                          & Preferred       & (relative)          & 
   \includegraphics[width=8cm]{{{img/think.qitl1.PersonFirst_pohtia_RW_vs_D}}}
 \end{frame}
 
-\begin{frame}
-\frametitle{QITL-01: Linguistic production vs. judgments}
-
-{\scriptsize
-\begin{table}[h]
-\begin{tabular}{ c  c || c || c  c}
-\hline
-Forced-choice &               & Frequency  &               & Acceptability \\
-Dispreferred  & Preferred     & (relative) & Unacceptable  & Acceptable  \\ \hline \hline
-\multicolumn{1}{c|}{$\varnothing$} & +             & Frequent   & \multicolumn{1}{c|}{$\varnothing$} & +           \\ \hline
-\multicolumn{1}{c|}{+}             & $\varnothing$ & Rare       & \multicolumn{1}{c|}{+}             & +           \\
-\hline
-\end{tabular}
-\end{table}
-}
-
-      $Frequency \Rightarrow Acceptability$ \\
-      $Unacceptability \Rightarrow Rarity$ \\
-      $\neg(Acceptability \Rightarrow Frequency)$ \\
-      $\neg(Rarity \Rightarrow Unacceptability)$ \\
-
-\end{frame}
-
 \begin{frame}[c]
   \frametitle{QITL-01 through the lenses of QITL-6}
   \framesubtitle{(courtesy of Dagmar Divjak)}
@@ -98,35 +75,35 @@ Dispreferred  & Preferred     & (relative) & Unacceptable  & Acceptable  \\ \hli
 \begin{frame}
 \frametitle{QITL-4 revisited -- comparison of NDL with statistical methods -- Classification Accuracy \& Recall}
 
-% latex table generated in R 2.15.0 by xtable 1.7-0 package
-% Thu May 24 17:10:59 2012
+% latex table generated in R 2.12.2 by xtable 1.5-6 package
+% Fri May  6 00:15:47 2011
 \begin{table}[ht]
-\begin{center}
-{\footnotesize
-\begin{tabular}{lrrr}
-  \hline
- & $\lambda_{\mbox{\tiny prediction}}$ & $\tau_{\mbox{\tiny classification}}$ & Accuracy \\ 
-  \hline
-Polytomous logistic regression & 0.447 & 0.516 & 0.646 \\ 
-  (One-vs-rest) &  &  &  \\ 
-  Polytomous mixed logistic regression &  &  &  \\ 
-  (Poisson reformulation) &  &  &  \\ 
-  1|Register & 0.435 & 0.505 & 0.638 \\ 
-  1|Genre & 0.433 & 0.504 & 0.637 \\ 
-  1|Lexeme & 0.428 & 0.499 & 0.634 \\ 
-  1|Register + 1|Lexeme & 0.431 & 0.502 & 0.636 \\ 
-  Support Vector Machine & 0.414 & 0.487 & 0.625 \\ 
-  Memory-Based Learning & 0.287 & 0.376 & 0.543 \\ 
-  (TiMBL) &  &  &  \\ 
-  Random Forests & 0.445 & 0.515 & 0.645 \\ 
-  Naive Discriminative Learning & 0.442 & 0.511 & 0.642 \\ 
-   \hline
-\end{tabular}
-}
-\caption{Classification diagnostics for five models fitted to the English data set ($n=909$).}
-\label{tab:results}
-\end{center}
+  \begin{center}
+    {\footnotesize
+      \begin{tabular}{lrrr}
+        \hline
+        & $\lambda_{\mbox{\tiny prediction}}$ & $\tau_{\mbox{\tiny classification}}$ & Accuracy \\
+        \hline
+        Polytomous logistic regression & 0.368 & 0.488 & 0.645 \\
+        (One-vs-rest) &  &  &  \\
+        Polytomous mixed logistic regression &  &  &  \\
+        (Poisson reformulation) &  &  &  \\
+        1|Section & 0.360 & 0.482 & 0.640 \\
+        1|Author & 0.358 & 0.481 & 0.640 \\
+        1|Section + 1|Author & 0.358 & 0.481 & 0.640 \\
+        Support Vector Machine & 0.340 & 0.466 & 0.629 \\
+        Memory-Based Learning & 0.286 & 0.422 & 0.599 \\
+        (TiMBL) &  &  &  \\
+        Random Forests & 0.326 & 0.455 & 0.621 \\
+        Naive Discriminative Learning & 0.346 & 0.471 & 0.632 \\
+        \hline
+      \end{tabular}
+    }
+    \caption{Classification diagnostics for five models fitted to the Finnish data set ($n=3404$).}
+    \label{tab:results}
+  \end{center}
 \end{table}
+
 \end{frame}
 
 %%% Local Variables: 
