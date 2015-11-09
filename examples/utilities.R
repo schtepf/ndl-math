@@ -15,6 +15,22 @@ noun.subset <- function (x, words) {
   do.call(rbind, res)
 }
 
+## transform NDL coding of cues/outcomes into binary indicator matrix
+ortho2matrix <- function (x, sep="_", bool=FALSE, background=FALSE, row.names=NULL) {
+  x.split <- strsplit(x, sep, perl=TRUE)
+  cats <- sort(unique(unlist(x.split)))
+  mat.rows <- lapply(x.split, function (v) cats %in% v)
+  mat <- do.call(rbind, mat.rows)
+  if (background) {
+    mat <- cbind(mat, rep(1, nrow(mat)))
+    colnames(mat) <- c(cats, "BGRD")
+  } else {
+    colnames(mat) <- cats
+  }
+  if (!is.null(row.names)) rownames(mat) <- row.names
+  if (bool) mat else mat + 0
+}
+
 ## apply one or more R-W updates, returning matrix of associations after each step
 ##  - X = indicator matrix of cues (c_j in original notation)
 ##  - Z = column vector of outcomes (o in original notation)

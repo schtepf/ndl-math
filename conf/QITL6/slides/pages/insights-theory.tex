@@ -4,7 +4,7 @@
 
   \begin{description}
   \item<1->[$\beta > 0$:] learning rate \so convergence of individual learners
-  \item<2->[$\lambda \neq 1$:]\gap[.5] linear scaling of association / activation (obvious)
+  \item<2->[$\lambda \neq 1$:]\gap[.5] linear scaling of associations / activation (obvious)
   \item<3->[$\alpha_i\neq 1$:]\gap[.5] salience of cue $C_i$ determines how fast associations are learned, but does not affect the final stable associations (same $L_2$ regression problem)
   \item<4->[$\beta_1 \neq \beta_2$:]\gap[.5] different positive/negative learning rates \emph{do} affect the stable associations; closely related to prevalence of positive and negative events in the population
   \end{description}
@@ -41,7 +41,7 @@
         \only<beamer:1| handout:0>{
           \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
         }
-        \only<beamer:2-| handout:0>{
+        \only<beamer:2-| handout:1>{
           \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
         }
         \node[right of=center] (right) {};
