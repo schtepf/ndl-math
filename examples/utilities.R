@@ -5,6 +5,9 @@
 ## a nice colour palette
 ten.colors <- c("black", "red", "green3", "blue", "grey65", "magenta", "yellow2", "cyan3", "orange", "olivedrab1")
 
+## complement to isTRUE
+isFALSE <- function (x) identical(FALSE, x)
+
 ## take subset of GerNouns data frame with one entry for each specified word form
 noun.subset <- function (x, words) {
   res <- lapply(words, function (w) {
@@ -102,3 +105,42 @@ rw.expected <- function (X, Z, steps, alpha=1, beta=.1, lambda=1, output.init=TR
   if (output.init) V.mat else V.mat[-1, , drop=FALSE]
 }
 
+## plot evolution of association strengths (wrapper around matplot with useful defaults)
+##  - x = matrix of association strengths (rows = time steps, columns = features)
+##  - type, lwd, lty, pch, col, ... = standard graphics parameters (col applies to columns of x)
+##  - xlim, ylim ... default to sensible ranges (ignoring steps=)
+##  - steps = plot only these time steps
+##  - shift = shift each line by this amount along y-axis to avoid overplotting
+##  - grid = if TRUE, display light horizontal grid lines in addition to zero line (with add=FALSE)
+##  - legend = show legend with specified lables or column name of x (legend=TRUE)
+##  - pos.legend = corner where legend is displayed (e.g. pos="topleft")
+##  - add = allows composite plots from multiple calls (make sure to plot legend only once!)
+rw.plot <- function (x, type="l", lwd=3, lty="solid", pch=20, cex=1.2, col=ten.colors, xlim=NULL, ylim=NULL, steps=seq_len(nrow(x)), shift=0, legend=NULL, pos.legend="topleft", xlab="", ylab=expression(paste("association strength ", V[i])), main="", grid=TRUE, add=FALSE, lab=c(10,5,7), las=1) {
+  nR <- nrow(x)
+  nC <- ncol(x)
+  if (is.null(xlim)) xlim <- c(1, nR)
+  if (is.null(ylim)) ylim <- range(x)
+  if (isTRUE(legend)) legend <- colnames(x)
+  if (isFALSE(legend)) legend <- NULL
+  if (!add) {
+    plot(0, 0, type="n", xlim=xlim, ylim=ylim, yaxs="i", xlab="", ylab=ylab, main=main, lab=lab, las=las)
+    if (grid) abline(h=seq(round(ylim[1], 1), round(ylim[2], 1), .1), lwd=1, col="#AAAAAA")
+    abline(h=0, lwd=1, col="black")
+  }
+  matplot(steps, x[steps, , drop=FALSE], type=type, lty=lty, lwd=lwd, pch=pch, cex=cex, col=col, add=TRUE)
+  if (!is.null(legend)) legend(pos.legend, inset=.02, bg="white", legend=legend, col=ten.colors, lwd=lwd+1, cex=cex)
+}
+
+## compute Danks equilibrium solution
+danks.equilibrium <- function (X, Z, plot=FALSE, col=ten.colors, pch=18, cex=3) {
+  m <- nrow(X)
+  n <- ncol(X)
+  pOC <- crossprod(X, Z) / m
+  pCC <- crossprod(X) / m
+  V.danks <- solve(pCC, pOC)
+  if (plot) {
+    x0 <- par("usr")[2]
+    points(rep(x0, n), V.danks, col=col, pch=pch, cex=cex)
+  }
+  invisible(list(pOC=pOC, pCC=pCC, V=V.danks))
+}

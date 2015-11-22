@@ -26,16 +26,11 @@ res <- rw.updates(X, Z, beta1=.2, show.activation=TRUE)
 round(res, 3)
 
 ## incremental visualization with matplot
-act.mat <- res[, 1:6] + rep(seq(0, .012, length.out=6), each=nrow(res)) # activation levels with small shifts to avoid overplotting
-t.vec <- seq_len(nrow(act.mat)) # first row = activations at time step 1 (will be updated by first event)
-
-for (step in t.vec) {
+act.mat <- res[, 1:6]
+for (step in 1:nrow(act.mat)) {
   idx <- 1:step
-  matplot(t.vec[idx], act.mat[idx, , drop=FALSE], type="b", lty="solid", col=ten.colors, pch=20, lwd=3,
-          xlim=range(t.vec), ylim=c(-.2, .6), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), lab=c(10,5,7), las=1)
-  abline(h=0, lwd=1)
+  rw.plot(act.mat, steps=idx, type="b", ylim=c(-.2, .6), legend=c("-e", "-n", "-s", "umlaut", "dbl cons", "bgrd"))
   text(idx + .5, -0.19, Sample$word[idx], adj=c(0, 0.5), srt=90, cex=1.2)
-  legend("topleft", inset=.02, bg="white", legend=c("-e", "-n", "-s", "umlaut", "dbl cons", "bgrd"), col=ten.colors, lwd=4, cex=1.2)
   dev.copy2pdf(file=sprintf("img/german_plural_rw_step_%d.pdf", step))
 }
 
@@ -43,10 +38,8 @@ for (step in t.vec) {
 for (step in list(list(b=.5,n=200,l="b050_n200"), list(b=.2,n=200,l="b020_n200"), list(b=.1,n=200,l="b010_n200"), list(b=.05,n=200,l="b005_n200"), list(b=.01,n=200,l="b001_n200"), list(b=.01,n=2000,l="b001_n2000"))) {
   set.seed(42) # use same sequence for all plots
   act.mat <- rw.updates(X, Z, beta1=step$b, sample=step$n)
-  t.vec <- seq_len(nrow(act.mat)) - 1
-  matplot(t.vec, act.mat, type="l", lty="solid", lwd=3, col=ten.colors, ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), las=1)
-  abline(h=0, lwd=1)
-  legend("topleft", legend=bquote(beta == .(step$b)), bty="n", cex=1.4)
+  rw.plot(act.mat, ylim=c(-.5, 1), legend=c("-e", "-n", "-s", "umlaut", "dbl cons", "bgrd"))
+  legend("bottomleft", legend=bquote(beta == .(step$b)), bty="n", cex=1.8, text.col="blue")
   dev.copy2pdf(file=sprintf("img/german_plural_rw_%s.pdf", step$l))
 }
 
@@ -54,18 +47,13 @@ for (step in list(list(b=.5,n=200,l="b050_n200"), list(b=.2,n=200,l="b020_n200")
 for (step in 1:5) {
   set.seed(step) # for reproducibility
   act.mat <- rw.updates(X, Z, beta1=0.2, sample=150)
-  t.vec <- seq_len(nrow(act.mat)) - 1
-  if (step == 1) {
-    plot(0, 0, type="n", xlim=range(t.vec), ylim=c(-.5, 1), yaxs="i", xlab="", ylab=expression(paste("association strength ", V[i])), las=1)
-    abline(h=0, lwd=1)
-    legend("topleft", legend=bquote(beta == 0.2), bty="n", cex=1.4)
-  }
-  matplot(t.vec, act.mat, type="l", lty="solid", lwd=1, col=ten.colors, add=TRUE)
+  first.step <- step == 1
+  rw.plot(act.mat, lwd=1, ylim=c(-.5, 1), add=!first.step)
+  if (first.step) legend("bottomleft", legend=bquote(beta == 0.2), bty="n", cex=1.6, text.col="black")
   dev.copy2pdf(file=sprintf("img/german_plural_exp_rw_step_%d.pdf", step))
 }
 act.mat <- rw.expected(X, Z, 150, beta=.2)
-t.vec <- seq_len(nrow(act.mat)) - 1
-matplot(t.vec, act.mat, type="l", lty="solid", lwd=4, col=ten.colors, add=TRUE)
+rw.plot(act.mat, lwd=4, add=TRUE)
 dev.copy2pdf(file="img/german_plural_exp_rw_final.pdf")
 
 ## compute the Danks equilibrium solution
@@ -107,10 +95,11 @@ round(rbind(LM=V.lm, Danks=drop(V.danks), LM2=res$coefficients), 5) # identical
 
 
 
-
-
 ## analysis of the full data set (rather slow)
 if (FALSE) {
-  res <- rw.updates(X0, Z0, verbose=TRUE, beta1=.01)
-  matplot(res, type="l", lty="solid")
+  obs.mat <- rw.updates(X0, Z0, verbose=TRUE, beta1=.01)
+  rw.plot(obs.mat, lwd=1)
+  exp.mat <- rw.expected(X0, Z0, steps=nrow(X0), beta=.01)
+  rw.plot(exp.mat, lwd=4, add=TRUE, legend=TRUE, pos="bottom")
+  dev.copy2pdf(file="img/german_plural_full_rw.pdf")
 }
