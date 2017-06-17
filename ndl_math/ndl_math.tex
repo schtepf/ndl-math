@@ -1,0 +1,284 @@
+%%
+%%  Template for a KLUE tech report
+%%
+
+\documentclass[a4paper,11pt]{article} % other options: twoside, 10pt, 12pt
+
+%% -- set up page size and margins
+\usepackage[a4paper,
+  top=30mm, bottom=30mm, left=30mm, right=30mm,
+  head=15pt, foot=30pt
+]{geometry}
+
+%% -- header and footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}                    % these header/footer settings are just an example
+\lhead{\textsc{KLUE Technical Report}}
+\chead{WS 2014/15}
+\rhead{PS Computerlinguistik}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%% -- set up language and encoding
+\usepackage[english]{babel}          % language settings
+\usepackage[utf8]{inputenc}          % so you can write non-ASCII characters in the input text
+\usepackage[T1]{fontenc}             % use the modern T1 font encoding
+
+%% -- uncomment these lines if you prefer a small gap between paragraphs
+%% \setlength{\parindent}{0mm}
+%% \setlength{\parskip}{\medskipamount}
+
+%% -- recommended packages
+\usepackage{amsmath,amssymb,amsthm}  % AMS math extensions
+\usepackage{graphicx,rotating}       % basic graphics, rotated text 
+\usepackage{xcolor}                  % modern colour support
+\usepackage{hyperref,url}            % add links to PDFs, \url{} command
+\usepackage{array,hhline,booktabs}   % modern tabular displays
+\usepackage{enumitem}                % customized lists
+\usepackage{microtype}               % optimized typesetting
+\usepackage[textwidth=25mm,textsize=footnotesize]{todonotes}               % you'll come to love this
+
+%% -- optional packages
+%% \usepackage{pifont}               % Adobe Dingbats with \ding{164}
+%% \usepackage{tikz}                 % create sophisticated drawings (once you've read the 1100-page manual)
+%% \usepackage[normalem]{ulem}       % for better underlining and crossed-out text
+%% \usepackage{multirow}             % cells spanning multiple rows in tabular display
+%% \usepackage{alltt}                % verbatim text with latex macros
+
+%% -- set up bibliography with flexible natbib style
+\usepackage{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}           % configure format of citations
+ 
+%% -- choose a font set (done last to avoid clashes with other packages)
+%% the default Computer Modern font is perfectly fine, but it has rather low weight for screen reading
+%% \usepackage[varg]{pxfonts}        % Palatino with matching math font
+%% \usepackage[varg]{txfonts}        % Adobe Times with matching math font
+%% \usepackage{mathptmx}             %   mostly uses standard PDF fonts
+%% \usepackage[charter]{mathdesign}  % Charter with matching math font
+%% \usepackage{fourier}              % Utopia with matching math font
+%% \usepackage{arev}                 % A sans-serif font (Bitstream Vera) with matching maths
+%% see http://www.tug.org/pracjourn/2006-1/hartke/ for font samples
+
+%% -- my own macros
+\usepackage{marginnote}         % make \todo{}'s work in footnotes
+\renewcommand{\marginpar}{\marginnote}
+
+\newcommand{\tocite}[1]{{\todo{citation}\color{red}[#1]}}
+\newcommand{\psup}[1]{\ensuremath{^{(#1)}}}
+\newcommand{\psupt}{\psup{t}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+%% -- typeset title and author, or create a separate titlepage
+\title{Some mathematical observations on the Naive Discriminative Learner:
+  Rescorla-Wagner vs.\ single-layer perceptron vs.\ least-squares regression}
+\author{
+  Stefan Evert\\
+  FAU Erlangen-Nürnberg
+}
+\date{17 August 2015}
+\maketitle
+
+%% if you want a customized titlepage, typeset everything yourself in a
+%% \begin{titlepage} ... \end{titlepage} environment
+
+%% -- generate a table of contents
+\tableofcontents{}
+%% \newpage                          % start new page after long toc
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% -- the main body of your report
+
+\section{Introduction}
+\label{sec:intro}
+
+Naive Discriminative Learning \citep[NDL,][]{Baayen:11} performs linguistic classification on the basis of direct associations between cues and outcomes, which are learned incrementally according to the Rescorla-Wagner (R-W) equations \citep{Rescorla:Wagner:72}. \citet{Danks:03} argued that if the R-W equations successfully acquire the true associations between cues and outcomes, they should approximate an equilibrium state in which the expected change in association values is zero if a cue-outcome event is randomly presented to the learner.  This equilibrium state can be computed directly by solving a matrix equation, without carrying out many iterations of R-W updates, making NDL attractive as an efficient learning technique for quantitative linguistics. Use of the Danks equilibrium also circumvents the problem that a simulation of the R-W model does not converge to a single state unless the learning rate is gradually reduced.
+
+It is well known that the R-W model is closely related to neural networks (through the ``delta rule'' for gradient-descent training of a single-layer perceptron) and to linear least-squares regression \citep[e.g.][]{Danks:03,Baayen:11}.  However, most authors do not seem to be aware of the true depth of these similarities and of their implications.
+
+In this paper, we show that the R-W equations are identical to gradient-descent training of a single-layer feed-forward neural network, which we refer to as a single layer perceptron (SLP\footnote{The term SLP is often reserved for a particular form of such a single-layer network using a Heavyside activation function (cf.\ \url{https://en.wikipedia.org/wiki/Perceptron}).  Here, we use it more generally to refer to any single-layer feed-forward network.}) here (Sec.~\ref{sec:slp}). Based on this result, we present a new, simpler derivation of the equilibrium conditions \citep{Danks:03} and prove that they correspond to the solution of a linear least-squares regression problem (Sec.~\ref{sec:regression}).  In Sec.~\ref{sec:consequence} we discuss some consequences of these new insights.
+
+\section{The Rescorla-Wagner equations}
+\label{sec:math-def}
+
+This section gives a mathematically precise definition of the R-W model, following the notation of \citet{Danks:03}.  The purpose of the R-W equations is to determine associations between a set of cues $C_1, \ldots, C_n$ and a single outcome $O$ in a population of event tokens $(\mathbf{c}\psupt, o\psupt)$, where $\mathbf{c}\psupt = (c_1\psupt, \ldots, c_n\psupt)$ is a vector of cue indicators for event $t$ and $o\psupt$ an indicator for the outcome $O$.  Formally,
+\begin{align}
+  \label{eq:def-c-o}
+  c_i\psupt &= 
+  \begin{cases}
+    1 & \text{if $C_i$ is present} \\
+    0 & \text{otherwise}
+  \end{cases}
+  &
+  o\psupt &= 
+  \begin{cases}
+    1 & \text{if $O$ results} \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{align}
+for $t = 1, \ldots, m$ (and $m = \infty$ can be allowed).
+
+When presented with an event $(\mathbf{c}, o)$, the R-W equations update the associations $V_i$ between cues and the outcome according to Eq.~(\ref{eq:def-rw}), which is a more formal notation of Eq.~(1) from \citet[111]{Danks:03}.
+\begin{equation}
+  \label{eq:def-rw}
+  \Delta V_i =
+  \begin{cases}
+    0 & \text{if } c_i = 0\\
+    \alpha_i \beta_1 \bigl(\lambda - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 1 \\
+    \alpha_i \beta_2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0
+  \end{cases}
+\end{equation}
+Here, $\alpha_i$ is a measure of the salience of cue $C_i$, $\beta_1$ and $\beta_2$ are learning rates for positive ($o=1$) and negative ($o=0$) events, and $\lambda$ is the maximal activation level of the outcome $O$.  A simplified form of the R-W equations proposed by \citep{Widrow:Hoff:60} assumes that $a_1 = \dots = a_n = 1$,  $\beta_1 = \beta_2 = \beta$ and $\lambda = 1$ (known as the W-H rule).
+
+\citet{Danks:03} argues that a successful R-W model should approach an equilibrium state of the association vector $\mathbf{V} = (V_1, \ldots, V_n)$ where the expected update $E[\Delta V_i] = 0$ if a random event token is sampled from the population.  If we make the simplifying assumption that $\beta_1 = \beta_2 = \beta$, this condition corresponds to the equality
+\begin{equation}
+  \label{eq:danks-equi}
+  \lambda \frac1m \sum_{t=1}^m c_i\psupt o_i\psupt - \sum_{j=1}^n V_j \frac1m \sum_{t=1}^m c_i\psupt c_j\psupt = 0
+\end{equation}
+In Danks's notation, Eq.~(\ref{eq:danks-equi}) can be written as
+\begin{equation}
+  \label{eq:danks-probs}
+  \lambda P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
+\end{equation}
+and is equal to his Eq.~(11) \citep[113]{Danks:03} multiplied by $P(C_i)$.
+
+\section{R-W and the single layer perceptron}
+\label{sec:slp}
+
+We will now formulate a single-layer feed-forward neural network (SLP) whose learning behaviour -- with gradient-descent training, which corresponds to the backprop algorithm for a SLP and is also known as the ``delta rule'' in this case -- is identical to the R-W equations with equal positive and negative learning rates $\beta_1 = \beta_2$ (but no other restrictions).  The SLP requires a slightly different representation of events as pairs $(\mathbf{x}\psupt, z\psupt)$ with
+\begin{align}
+  \label{eq:def-x-z}
+  x_i\psupt &= 
+  \begin{cases}
+    a_i & \text{if $C_i$ is present} \\
+    0 & \text{otherwise}
+  \end{cases}
+  &
+  z\psupt &= 
+  \begin{cases}
+    \lambda & \text{if $O$ results} \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{align} 
+Here, $a_i > 0$ is a (different) measure of the salience of cue $C_i$ and $\lambda > 0$ the maximum activation of outcome $O$.  Note that the event representation $(\mathbf{x}, z)$ is connected to the representation $(\mathbf{c}, o)$ through the equivalences $x_i = a_i c_i$ and $z = \lambda o$.  In the W-H case, the two representations are identical.
+
+The SLP computes the activation of the outcome as a linear combination $y = \sum_{i=1}^n w_i x_i$ of the input variables, where $\mathbf{w} = (w_1, \ldots, w_n)$ is the weight vector of the network.  It uses a linear activation function $h(y) = y$ and a Euclidean cost function for the difference between $y$ and the desired activation level $z$.  The cost associated with a given event token $(\mathbf{x}, z)$ is thus
+\begin{equation}
+  \label{eq:cost-single}
+  E(\mathbf{w}, \mathbf{x}, z) = (z - y)^2 = \biggl( z - \sum_{i=1}^n w_i x_i \biggr)^2 .
+\end{equation}
+For batch updates based on the full population of event tokens, the corresponding batch cost is
+\begin{equation}
+  \label{eq:cost-batch}
+  E(\mathbf{w}) = \sum_{t=1}^m E(\mathbf{w}, \mathbf{x}\psupt, z\psupt) .
+\end{equation}
+If smaller batches are used, the sum $j$ ranges over a subset of the population for each update step.
+
+Presented with an event token $(\mathbf{x}, z)$, gradient-descent training of this SLP updates the weight vector by 
+\begin{equation}
+  \label{eq:gd-rule}
+  \Delta w_i = -\delta \frac{\partial E(\mathbf{w}, \mathbf{x}, z)}{\partial w_i}
+\end{equation}
+where $\delta > 0$ is the learning rate and the gradient $\partial E / \partial w_i$ is given by
+\begin{equation}
+  \label{eq:gd-gradient}
+  \frac{\partial E(\mathbf{w}, \mathbf{x}, z)}{\partial w_i} = 2 (z - y) (-x_i)
+  = -2 \biggl( z - \sum_{j=1}^n w_j x_j \biggr) x_i .
+\end{equation}
+%%
+Inserting the equalities $x_i = a_i c_i$ and $z = \lambda o$, we obtain
+\begin{equation}
+  \label{eq:slp-delta}
+    \Delta w_i =
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      2 \delta a_i \bigl(\lambda - \sum_{j=1}^n c_j a_j w_j \bigr) & \text{if } c_i = 1 \wedge o = 1 \\
+      2 \delta a_i \bigl(0 - \sum_{j=1}^n c_j a_j w_j \bigr) & \text{if } c_i = 1 \wedge o = 0 
+    \end{cases}
+\end{equation}
+Comparing this with Eq.~(\ref{eq:def-rw}), we can set $V_j = a_j w_j$, i.e.\ we interpret the weight vector $\mathbf{w}$ of the SLP as salience-adjusted cue-outcome associations.  With $\Delta V_i = a_i \Delta w_i$, we obtain
+\begin{equation}
+    \Delta V_i =
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      2 \delta a_i^2 \bigl(\lambda - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 1 \\
+      2 \delta a_i^2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0
+    \end{cases}
+\end{equation}
+which is identical to the R-W equations for $\beta_1 = \beta_2 = 2\delta$ and $\alpha_i = a_i^2$.
+
+The assumption $\beta_1 = \beta_2$ can be relaxed if we change the representation of events to
+\begin{equation}
+  \label{eq:def-x-mod}
+  x_i\psupt = 
+  \begin{cases}
+    a_i & \text{if } c_i = 1 \wedge o = 1 \\
+    a_i \sqrt{\frac{\beta_2}{\beta_1}} & \text{if } c_i = 1 \wedge o = 0 \\
+    0 & \text{otherwise}
+  \end{cases}
+\end{equation}
+i.e.\ if we allow the salience of cues to differ between positive ($o = 1$) and negative ($o = 0$) events; the scaling factor $\beta_2 / \beta_1$ is the same for all cues $C_i$.  We do not pursue this extension further here because it affects the equilibrium state in an unpredictable way.  As \citet{Danks:03} has already observed, the cue saliences $\alpha_i$ have no impact at all on the equilibrium and the maximum activation level $\lambda$ merely results in a linear scaling. 
+
+\section{R-W and least-squares regression}
+\label{sec:regression}
+
+We have shown in Sec.~\ref{sec:slp} that the R-W equations describe the gradient-descent training of a SLP for the linear regression problem
+\begin{equation}
+  \label{eq:lsr-def}
+  \min_{\mathbf{w}} E(\mathbf{w})
+  = \min_{\mathbf{w}} \sum_{t=1}^m E(\mathbf{w}, \mathbf{x}\psupt, z\psupt) .
+\end{equation}
+This equivalence holds generally, not only in the case of the simplified W-H rule.  Thus, both R-W and our SLP aim to solve the same regression.
+
+If the training procedure is successful, the weight vector $\mathbf{w}$ should approach the least-squares solution of the regression problem.  With single updates (corresponding to the R-W model), convergence cannot be achieved unless the learning rate is gradually reduced.  With batch updates treating the entire population as a single batch, the cost $E(\mathbf{w})$ is a convex function of $\mathbf{w}$ and the gradient descent procedure converges to its unique minimum after a sufficient number of iterations.\footnote{In fact, the minimum of $E(\mathbf{w})$ might not be unique under certain circumstances, viz. if the correlation matrix of the cues is not positive definite; cf. \citet[115--116]{danks2003} for the special case of ``coextensive'' cues. In order to keep the discussion straightforward, we assume the general case of a unique minimum in the present paper.}
+
+In order to express Eq.~(\ref{eq:lsr-def}) more concisely, we define an $m\times n$ matrix $\mathbf{X} = (x_i\psupt) = (x_{ti})$ of cues for all event tokens in the population.  The rows of this matrix correspond to event tokens $t$, the columns to cues $i$; i.e.\ row number $t$ contains the input vector $\mathbf{x}\psupt$.  We also define the column vector $\mathbf{z} = (z\psup{1}, \ldots, z\psup{m})$ of outcomes and recall that $\mathbf{w} = (w_1, \ldots, w_n)$ is a column vector of SLP weights.  The batch cost can now be written as a dot product
+\begin{equation}
+  \label{eq:lsr-matrix}
+  E(\mathbf{w}) = \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr)^T \bigl( \mathbf{z} - \mathbf{X} \mathbf{w} \bigr) .
+\end{equation}
+The least-squares solution must satisfy the condition $\nabla E(\mathbf{w}) = \mathbf{0}$, which leads to the so-called normal equations
+\begin{equation}
+  \label{eq:lsr-normal}
+  \mathbf{X}^T \mathbf{X} \mathbf{w} = \mathbf{X}^T \mathbf{z} .
+\end{equation}
+In the case of the W-H rule, $\mathbf{X}$ is a coincidence matrix between cues and events, with $x_{ti} \in \{0, 1\}$.  A straightforward calculation shows that $\mathbf{X}^T \mathbf{X}$ is a square matrix of co-occurrence counts $f(C_i, C_j)$ between cues, and $\mathbf{X}^T \mathbf{z}$ is a vector of co-occurrence counts $f(C_i, O)$ between the cues and the outcome $O$.  Dividing Eq.~(\ref{eq:lsr-normal}) by $m$, we obtain Eq.~(\ref{eq:danks-probs}) with $\lambda = 1$, i.e.
+\[
+P(O, C_i) - \sum_{j=1}^n V_j P(C_i, C_j) = 0
+\]
+which is the same as Eq.~(3) of \citet{Danks:03} with rows multiplied by $P(C_i)$.  Since linear regression is invariant wrt.\ the salience factors $a_i$ (the weights are simply adjusted by reciprocal factors $1 / a_i$ to achieve the same regression values) and scales linearly with $\lambda$, equivalence to the equilibrium conditions \citep[112--114]{Danks:03} also holds for arbitrary values of $a_i$ and $\lambda$.
+
+In the general case where the regression problem has a unique solution, $\mathbf{X}^T \mathbf{X}$ is symmetric and positive definite.  It can therefore be inverted and the least-squares solution is given by
+\begin{equation}
+  \label{eq:lsr-solution}
+  \mathbf{w}^* = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{z} .
+\end{equation}
+Standard statistical software such as R \citep{R:10} can be used to compute $\mathbf{w}^*$ reliably and efficiently.  It is not necessary to carry out the iterative training procedure of the R-W model or the neural network, and there is no need to worry about convergence of the iterative training.
+
+\section{Consequences}
+\label{sec:consequence}
+
+\begin{itemize}
+
+\item We have shown that R-W association learning, a linear SLP neural network and linear regression are fully equivalent and should ideally lead to the same least-squares solution.  As long as a researcher is only interested in the result of association learning, not in the iterative process, it is sufficient to calculate the least-squares solution directly from Eq.~(\ref{eq:lsr-solution}).
+
+\item The R-W salience factors $\alpha_i$ have no effect on the learning result -- because linear regression is not sensitive to such a scaling of the input variables -- but only on the learning process: associations for cues with high salience $\alpha_i$ are learnt faster than for other cues.  The parameter $\lambda$ leads to a (trivial) linear scaling of the learning result, but has not effect on the learning process.  Only different learning rates $\beta_1\neq \beta_2$ affect the learning result, because they modify $\mathbf{X}^T \mathbf{X}$ in a complex way.
+
+\item If R-W association learning or SLP training does not approximate the least-squares solution, it can arguably be considered to have failed.  The only research question of interest that requires R-W iteration or application of the delta rule is thus: Under which circumstances and for which parameter settings does the R-W iteration converge or at least approximate the linear regresson? This is particularly relevant for single-event updates (as specified for the R-W model), which are much less robust and lead to larger fluctuations then batch updates.  We plan to work on these issues with the help of simulation experiments.  
+
+\item Having established NDL as linear regression with its well-known drawbacks (e.g.\ a propensity for overfitting the training data, especially if there is a large number $n$ of cues), it will be interesting to contrast it with more state-of-the-art machine learning techniques.  We plan to carry out a mathematical analysis and empirical study of (i) logistic regression, which is more appropriate for dichotomous data than linear least-squares regression, and (ii) regularization techniques, which control overfitting and encourage sparse solutions.
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% -- the biblography (automatically generated with bibtex)
+%% \renewcommand{\bibsection}{LITERATUR}  % change heading of references section
+\bibliographystyle{natbib-modified}       % there are many other bibliography styles
+\bibliography{stefan-literature,stefan-publications}
+
+\end{document}
