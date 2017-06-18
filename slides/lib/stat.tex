@@ -1,0 +1,51 @@
+%%
+%% some useful macros: statistical notation
+%%
+
+%% \p{X=k};  \pC{X=k}{Y=l};  \bigp{X_i = k};   \pscale{\frac{Z}{S^2}};
+%% probability P(X=k) and conditional probability P(X=k|Y=l), also with larger or scaled parentheses
+%% \p[\theta]{X=k};  \pC[\text{interpolated}]{X=k}{Y=l};  ...
+%% with optional subscripts (for model probability, null probability, etc.)
+\newcommand{\p}[2][]{\mathop{\mathrm{Pr}_{#1}}(#2)}
+\newcommand{\pscale}[2][]{\mathop{\mathrm{Pr}_{#1}}\!\left(#2\right)}
+\newcommand{\bigp}[2][]{\mathop{\mathrm{Pr}_{#1}}\bigl(#2\bigr)}
+\newcommand{\pC}[3][]{\p[#1]{#2\,|\,#3}} 
+\newcommand{\pCscale}[3][]{\pscale[#1]{#2\left|\,#3\right.\!}} 
+\newcommand{\bigpC}[3][]{\bigp[#1]{#2\!\bigm|\!#3}} 
+
+%% \Exp{X};  \Var{X};  \Exp[0]{X};  \Var[0]{X};  
+%% \bigExp{X}; \bigVar{X}; \Expscale{X};  \Varscale{X};
+%% expectation E[X] and variance V[X], expectation and variance under null hypothesis, 
+%% and variants with largeer or scaled brackets
+\newcommand{\Exp}[2][]{\mathrm{E}_{#1}[#2]}
+\newcommand{\Var}[2][]{\mathop{\mathrm{Var}}_{#1}[#2]}
+\newcommand{\bigExp}[2][]{\mathrm{E}_{#1}\!\bigl[#2\bigr]}
+\newcommand{\bigVar}[2][]{\mathop{\mathrm{Var}}_{#1}\bigl[#2\bigr]}
+\newcommand{\Expscale}[2][]{\mathrm{E}_{#1}\left[#2\right]}
+\newcommand{\Varscale}[2][]{\mathop{\mathrm{Var}}_{#1}\left[#2\right]}
+
+%% \pihat = \hat{\pi}
+%% sampling estimate for population probability \pi (may need fine-tuning)
+\newcommand{\pihat}{\hat{\pi}}
+
+%% \Entropy{X}, \Entropy{p}, \KL{p}{q}, \MI{X}{Y}
+%% \bigEntropy{}, \Entropyscale{}, \bigKL{}{}, \KLscale{}{}, \bigMI{}{}, \MIscale{}{}
+%% entropy, KL distance, conditional entropy and mutual information (with scaled variants)
+\newcommand{\Entropy}[1]{H[{#1}]}
+\newcommand{\bigEntropy}[1]{H\bigl[{#1}\bigr]}
+\newcommand{\Entropyscale}[1]{H\left[{#1}\right]}
+\newcommand{\KL}[2]{D({#1}\|{#2})}
+\newcommand{\bigKL}[2]{D\bigl({#1}\bigm\|{#2}\bigr)}
+\newcommand{\KLscale}[2]{D\left({#1}\left\|{#2}\right.\right)}
+\newcommand{\MI}[2]{I[{#1};{#2}]}
+\newcommand{\bigMI}[2]{I\bigl[{#1};{#2}\bigr]}
+\newcommand{\MIscale}[2]{I\left[{#1};{#2}\right]}
+
+%% \corr (correlation) and \cov (covariance) as mathop's
+\newcommand{\corr}{\mathop{\mathrm{corr}}}
+\newcommand{\cov}{\mathop{\mathrm{cov}}
+}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

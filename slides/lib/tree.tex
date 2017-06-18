@@ -1,0 +1,142 @@
+%%
+%% macros for typesetting parse trees with PGF
+%%
+
+\usepackage{calc}
+
+%% configure tree dimensions:
+%%   \setlength{\treeHstep}{5mm}, \setlength{\treeVstep}{5mm}
+%%   \setTreeHeight{6} -> 6 non-terminal layers above terminal string (default: 8)
+%%   \setTreeRelative{3.5} -> slots are specified relative to this position (default: 0)
+%%   \setTreeBoxW{Text}, \setTreeBoxH{Text}, \setTreeBoxWH{Text} 
+%%      -> set amount of space reserved for tree node (to accommodate Text in current font)
+%%
+\newlength{\treeHstep}
+\setlength{\treeHstep}{10mm}
+\newlength{\treeVstep}
+\setlength{\treeVstep}{10mm}
+\newlength{\treeBoxH}
+\newlength{\treeBoxD}
+\newlength{\treeBoxW}
+%% internal lengths and commands
+\newlength{\treeBoxTotalH}
+\newlength{\treeBoxBaseDY}
+\newcommand{\calculateTreeBox}{%
+  \setlength{\treeBoxTotalH}{\treeBoxH + \treeBoxD}%
+  \setlength{\treeBoxBaseDY}{\treeBoxD - \treeBoxTotalH / 2}%
+}
+\newcommand{\setTreeBoxW}[1]{\settowidth{\treeBoxW}{#1}}
+\newcommand{\setTreeBoxH}[1]{%
+  \settoheight{\treeBoxH}{#1}%
+  \settodepth{\treeBoxD}{#1}%
+  \calculateTreeBox{}}
+\newcommand{\setTreeBoxWH}[1]{\setTreeBoxW{#1}\setTreeBoxH{#1}}
+\setTreeBoxW{XX}                % default: W = two wide letters
+\setTreeBoxH{Tg}                % default: H = full height + depth
+\newcounter{TreeHeight}
+\setcounter{TreeHeight}{8}
+\newcommand{\setTreeHeight}[1]{\setcounter{TreeHeight}{#1}}
+%% internal lengths and commands
+\newlength{\treeRelativeX}
+\setlength{\treeRelativeX}{0mm}
+\newcommand{\setTreeRelative}[1]{\setlength{\treeRelativeX}{\treeHstep * \real{#1}}}
+
+%% these are temporary registers for internal use
+\newlength{\treeTemp}
+\newlength{\treeTempX}
+\newlength{\treeTempY}
+\newcounter{TreeTemp}
+
+%% internal: \treeYforLayer{<layer>} -> \treeTempY = y-position
+\newcommand{\treeYforLayer}[1]{%
+  \setlength{\treeTempY}{\treeVstep * \real{\theTreeHeight} - \treeVstep * \real{#1}}%
+}
+
+%% internal: \treeXforSlot{<slot>} -> \treeTempX = x-position
+\newcommand{\treeXforSlot}[1]{%
+  \setlength{\treeTempX}{\treeRelativeX + \treeHstep * \real{#1}}%
+}
+
+%% internal: insert strut for full text line height (to improve text alignment)
+\newcommand{\treeStrut}{%
+  \settoheight{\treeTemp}{X}\rule{0mm}{\treeTemp}%
+}
+
+%% put (non-terminal) tree node in slot <Slot> on layer <Layer>, 
+%% labelled with <Text> and assigned the node label <Lab>; 
+%% layers count from 0 = root layer at the top of the tree
+%%   \treeNode<overlay>{Lab}{Layer}{Slot}{Text}
+%%   \treeNodePT<overlay>{Lab}{Slot}{Text} ... on pre-terminal layer
+\newcommand<>{\treeNode}[4]{%
+  \treeYforLayer{#2}\treeXforSlot{#3}%
+  \pgfnoderect{#1}[virtual]{\pgfpoint{\treeTempX}{\treeTempY}}{\pgfpoint{\treeBoxW}{\treeBoxTotalH}}%
+  \addtolength{\treeTempY}{\treeBoxBaseDY}%
+  \only#5{\pgfputat{\pgfpoint{\treeTempX}{\treeTempY}}{\pgfbox[center,base]{#4}}}%
+}
+\newcommand<>{\treeNodePT}[3]{%
+  \setcounter{TreeTemp}{\theTreeHeight - 1}%
+  \treeNode#4{#1}{\theTreeTemp}{#2}{#3}%
+}
+
+%% put (terminal) leaf node in slot <Slot> on lexical layer>, 
+%% labelled with <Text> and assigned the node label <Lab>
+%%   \treeLeaf<overlay>{Lab}{Slot}{Text}
+\newcommand<>{\treeLeaf}[3]{%
+  \treeNode#4{#1}{\theTreeHeight}{#2}{#3}%
+}
+
+%% connect tree nodes with straight (unlabelled) edge
+%%   \treeEdge{Lab1}{Lab2}
+\newcommand<>{\treeEdge}[2]{%
+  \begin{pgfscope}
+    \pgfclearstartarrow
+    \pgfclearendarrow
+    \pgfsetlinewidth{1pt}
+    \pgfnodeconnline#3{#1}{#2}
+  \end{pgfscope}
+}
+
+%% connect tree nodes with curved (unlabelled) edge; leaves upper node
+%% Lab1 at Angle relative to vertical, enters lower node Lab2 vertically
+%%   \treeEdgeCurve{Lab1}{Angle}{Lab2}
+\newcommand<>{\treeEdgeCurve}[3]{%
+  \begin{pgfscope}
+    \pgfclearstartarrow%
+    \pgfclearendarrow%
+    \pgfsetlinewidth{1pt}%
+    \setcounter{TreeTemp}{#2 - 90}%
+    \pgfnodeconncurve#4{#1}{#3}{\theTreeTemp}{90}{\treeVstep}{\treeVstep}
+  \end{pgfscope}
+}
+
+%% attach note to given node (in right bottom corner)
+%%   \treeNote<overlay>[right]{Lab}{Text}
+\newcommand<>{\treeNote}[3][left]{%
+  \only#4{%
+    \pgfputat{\pgfnodeborder{#2}{-60}{-2pt}}{%
+      \pgfbox[#1,top]{\setlength{\fboxsep}{1pt}\colorbox{white}{%
+          \scriptsize\secondary{\treeStrut{}#3}}}}}%
+}
+
+%% represent subtree (root=Root, boundary=Left..Right) as triangle
+%%   \treeTriangle<overlay>{Root}{Left}{Right}
+\newcommand<>{\treeTriangle}[3]{%
+  \begin{pgfscope}
+    \only#4{%
+      \pgfclearstartarrow%
+      \pgfclearendarrow%
+      \pgfsetlinewidth{1pt}%
+      \pgfmoveto{\pgfnodeborder{#1}{-90}{2pt}}%
+      \pgflineto{\pgfnodeborder{#2}{135}{2pt}}%
+      \pgflineto{\pgfnodeborder{#3}{45}{2pt}}%
+      \pgfclosestroke%
+    }
+  \end{pgfscope}
+}
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: ""
+%%% End: 

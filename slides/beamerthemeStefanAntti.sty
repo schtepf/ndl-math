@@ -1,0 +1,65 @@
+\ProvidesPackage{beamerthemeStefanAntti}
+
+\definecolor{faublue}{cmyk}{1,.5,0,.5}      % FAU = main colour for structural elements
+\definecolor{faugrey}{cmyk}{.1,0,0,.4}      % TechFak
+\definecolor{faugold}{cmyk}{.1,.4,1,.2}     % PhilFak
+
+\definecolor{pltblack}{cmyk}{.7,.6,.6,1}    % my FAU-matched palette for presentations
+\definecolor{pltred}{cmyk}{0,.85,.9,.05}
+\definecolor{pltblue}{cmyk}{.75,.40,0,0}
+\definecolor{pltgreen}{cmyk}{.85,0,.8,.15}
+\definecolor{pltyellow}{cmyk}{0,.15,.90,.1}
+\definecolor{pltpurple}{cmyk}{.4,.8,0,0}
+
+\definecolor{primary}{named}{pltred}        % primary = red
+\definecolor{secondary}{named}{pltblue}     % secondary = blue
+\definecolor{counterpoint}{named}{pltgreen} % counterpoint = green
+\definecolor{fourth}{named}{pltpurple}      % fourth = purple
+\definecolor{foreground}{named}{pltblack}   % foreground = black
+\definecolor{light}{named}{faugrey}         % light colour = FAU grey
+
+\definecolor{purered}{rgb}{.7, 0, 0}        % "pure" red, green and blue
+\definecolor{puregreen}{rgb}{0, .5, 0}
+\definecolor{pureblue}{rgb}{0, 0, .7}
+
+\mode<presentation>             % ==========
+
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+
+% Tills' opinion: should be done in an inner theme, not here.
+\usesubitemizeitemtemplate{%
+    \tiny\raise1.5pt\hbox{\color{beamerstructure}$\blacktriangleright$}%
+}
+\usesubsubitemizeitemtemplate{%
+    \tiny\raise1.5pt\hbox{\color{beamerstructure}$\bigstar$}%
+}
+
+\setbeamersize{text margin left=1cm,text margin right=1cm}
+
+% don't show Logo (bottom right corner) by default, but define commands so user can activate/deactivate it
+\pgfdeclareimage[height=12mm]{fau-logo}{fau-logo-philtheo}
+\pgfdeclareimage[height=10mm]{ccl-logo}{CCL_logo}
+\pgfdeclareimage[height=10mm]{ualberta-logo}{UAlberta_logo_440}
+\newcommand{\showLogo}{\logo{\raisebox{2mm}{\pgfuseimage{ualberta-logo}}\hspace{2cm}\raisebox{3.3mm}{\pgfuseimage{ccl-logo}}\hspace{4mm}\pgfuseimage{fau-logo}}}
+\newcommand{\hideLogo}{\logo{}}
+\showLogo
+
+\usecolortheme[named=faublue]{structure}
+\usecolortheme{rose}
+\setbeamercolor{frametitle}{fg=faublue,bg=white}
+\setbeamercolor{logo}{fg=black,bg=white}
+%% coloured math can be quite annoying (esp. if mixed in displayed formulas with underbraces etc.)
+% \setbeamercolor{math text inlined}{fg=secondary} 
+
+\setbeamercolor*{palette tertiary}{fg=white,bg=faublue!80!white}
+\setbeamercolor*{palette secondary}{fg=white,bg=faugold!60!white}
+\setbeamercolor*{palette primary}{fg=faublue,bg=faugrey!20!white}
+% \setbeamercolor*{palette secondary}{use=structure,fg=white,bg=structure.fg!55!white}
+% \setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=structure.fg!80!white}
+\setbeamercolor*{palette quaternary}{fg=white,bg=black}
+
+
+\mode<all>                      % ==========
+
+

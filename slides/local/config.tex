@@ -1,0 +1,24 @@
+%%%
+%%% local configuration adjustments
+%%%
+
+%%% You can change pre-defined colours here, override built-in macros from the
+%%% style definition and standard library, as well as define macros needed by
+%%% all local documents.
+
+%%% e.g. adjust counterpoint (dark green) for data projectors where greens are
+%%% far too bright, as well as green component of light colour and pure green
+%%% (of course, it's a better solution to adjust the gamma settings of your monitor)
+%%
+%% \definecolor{counterpoint}{rgb}{.1, .3, 0}
+%% \definecolor{light}{rgb}{.45, .3, .55}
+%% \definecolor{puregreen}{rgb}{0, .35, 0}
+
+%% parenthesized superscript (time step / event token)
+\newcommand{\psup}[1]{\ensuremath{^{(#1)}}}
+\newcommand{\psupt}{\psup{t}}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows} %% should be arrows.meta (PGF 3.0 and newer) for nicer plots
+\usepackage{pgfplots}
