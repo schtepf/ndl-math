@@ -1,0 +1,1082 @@
+\pdfminorversion=4 % avoid compatibility problems with embedded PNGs in Adobe Acrobat
+%% \documentclass[handout,t]{beamer} % HANDOUT
+%% \documentclass[handout,notes=show,t]{beamer} % NOTES
+\documentclass[t]{beamer} % SLIDES
+\usepackage{etex}
+
+\usetheme{StefanFAU}                % page themes: StefanPlain, StefanFAU, StefanOsna
+%% \usepackage{beamer-font-lucida}  % commercial Lucida Math font package (recommended)
+%% \usepackage{beamer-font-charter} % commercial Charter Match font package
+%% \usepackage{beamer-font-arev}    % use Arev fonts from TexLive (combine with document option "smaller")
+\usepackage{beamer-tools-stefan}    % standard packages, definitions and macros
+
+%%%% uncomment the following macro libraries as needed
+%% \input{lib/pgf}   % basic PGF utility functions
+\input{lib/text}  % some macros for typesetting text
+\input{lib/math}  % basic mathematical notation
+\input{lib/stat}  % notation for probability theory and statistics
+\input{lib/vector}% convenience macros for vectors and matrices
+%% \input{lib/grid}  % grid-like layout of text and graphics in PGF picture
+%% \input{lib/tree}  % typesetting parse trees with PGF
+%% \input{lib/chart} % demonstrating chart parsers with PGF
+%% \input{lib/fl}    % some notation for formal language theory
+
+\input{local/config} % local adjustments to configuration and macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Titlepage
+
+%\title[NDL: From R-W to ML in NLP]{\textbf{Naïve Discriminative Learning:}\\
+%  From Rescorla-Wagner to Machine Learning in Natural Language Processing}
+\title[NDL: From R-W to ML in NLP]{Naïve Discriminative Learning}
+\subtitle{From Rescorla-Wagner to Machine Learning in Natural Language Processing}
+\author{Stefan Evert}
+\institute[]{%
+  Friedrich-Alexander-Universität Erlangen-Nürnberg, Germany\\
+  {\secondary{\url{stefan.evert@fau.de}}}
+}
+\date[Osnabrück, 21.06.2017]{Osnabrück, 21 June 2017}
+
+
+\begin{document}
+
+%% \showLogo  % uncomment to show logo on title page in StefanPlain style
+\frame{\titlepage}
+\hideLogo
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Outline
+
+\section*{Outline}
+\frame{ 
+  \frametitle{Outline}
+  \tableofcontents
+}
+\AtBeginSubsection[]
+{
+  \begin{frame}
+    \frametitle{Outline}
+    \tableofcontents[current,currentsubsection]
+  \end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1 Introduction
+\section{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Naïve Discriminative Learning}
+
+\begin{frame}
+  \frametitle{Naïve Discriminative Learning}
+  
+  \begin{itemize}
+  \item \citet{Baayen:11,Baayen:etc:11}
+  \item Incremental learning equations for direct associations between cues and outcomes \citep{Rescorla:Wagner:72} 
+  \item Equilibrium conditions \citep{Danks:03}
+  \item Implementation as R package \texttt{ndl} \citep{Arppe:etc:14}
+  \end{itemize}
+  
+  \gap[1]
+  \begin{description}[Discriminative:]
+   \item[Naive:] cue-outcome associations estimated separately for
+    each outcome (this independence assumption is similar to
+    a naive Bayesian classifier)
+  \item[Discriminative:] cues predict outcomes based on total activation level
+    = sum of direct cue-outcome associations
+  \item[Learning:] incremental learning of association strengths
+  \end{description}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Rescorla-Wagner equations (1972)}
+
+  Represent incremental associative learning and subsequent on-going
+  adjustments to an accumulating body of knowledge.
+
+  \gap[1]
+  Changes in cue--outcome association strengths:
+  \begin{itemize}
+  \item no change if a cue is not present in the input
+  \item increased if the cue and outcome co-occur
+  \item decreased if the cue occurs without the outcome
+  \item if outcome can already be predicted well (based on all cues),
+    adjustments become smaller
+  \end{itemize}
+
+  \gap[1] 
+  Only final results of incremental adjustments to the cue--outcome associations are
+  kept -- no need for remembering the individual adjustments, however many
+  there are.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Danks (2003) equilibrium conditions} 
+
+  \begin{itemize}
+  \item Presume an ideal stable ``adult'' state, where all cue--outcome
+    associations have fully been learnt -- further data points should then
+    have no impact on the cue--outcome associations
+  \item Provide a convenient short-cut to calculating the final cue--outcome
+    association weights resulting from incremental learning, using relatively
+    simple matrix algebra
+  \item Most learning parameters of the Rescorla-Wagner equations drop
+    out of the Danks equilibrium equation
+  \item Circumvent the problem that a simulation of an R-W learner does
+    usually not converge to a stable state unless the learning rate is
+    gradually decreased
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Traditional \vs linguistic applications of R-W}
+
+  \begin{itemize}
+  \item Traditionally: simple controlled experiments on item-by-item
+    learning, with only a handful of cues and perfect associations
+  \item Natural language: full of choices among multiple possible alternatives
+    -- phones, words, or constructions -- which are influenced by a large
+    number of contextual factors, and which often show weak to moderate 
+    tendencies towards one or more of the alternatives rather than a
+    single unambiguous decision
+  \item These messy, complex types of problems are a key area of interest in
+    modeling and understanding language use
+  \item Application of R-W in the form of a Naïve Discriminative Learner to
+    such linguistic classification problems is sucessful in practice and can 
+    throw new light on research questions
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Examples}
+
+  \begin{itemize}
+  \item Dative alternation in English
+    \begin{itemize}
+    \item \textcite{Mary gave John the book} \vs \textcite{Mary gave the book to John}
+    \item Which factors determine the choice of construction?
+    \end{itemize}
+  \item<2-> \citet{Bresnan:etc:07} predict speaker choice with acc.~=~92\%
+    \begin{itemize}
+    \item based on features such as \secondary{pronominality, definiteness, number, person, animacy, concreteness, semantic class} and \secondary{accessibility} of recipient and theme (most features have a significant effect)
+    \item logistic regression, baseline acc.~=~79\%
+    \end{itemize}
+  \item<3-> \citet{Baayen:11} obtains same result with simpler NDL
+    \begin{itemize}
+    \item TiMBL: 92\%, SVM: 93\%, GLMM: 93\%
+    \item NDL with speaker information: 95\%\\
+      (other learners don't benefit from speakers)
+    \end{itemize}
+  \item<4-> \citet{Baayen:etc:11} apply NDL to morphological learning based on direct form-meaning associations
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Related work}
+
+  \begin{itemize}
+  \item R-W \vs perceptron \citep[p.~155f]{Sutton:Barto:81}
+  \item R-W \vs least-squares regression \citep[p.~457]{Stone:86}
+  \item R-W \vs logistic regression \citep[p.~234]{Gluck:Bower:88}
+  \item R-W \vs neural networks \citep{Dawson:08}
+  \item[\hand] similarities are also mentioned by many other authors \ldots
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2 Mathematics
+\section{Mathematics}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The Rescorla-Wagner equations}
+
+\begin{frame}
+  \frametitle{The Rescorla-Wagner equations}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item<1-> Goal of naïve discriminative learner: predict an \primary{outcome} $O$ based on presence or absence of a set of \primary{cues} $C_1, \ldots, C_n$
+  \item<2-> An \primary{event} $(\vc, o)$ is formally described by indicator variables
+    \begin{align*}
+      c_i &= 
+       \begin{cases}
+         1 & \text{if $C_i$ is present} \\
+         0 & \text{otherwise}
+       \end{cases}
+      &
+      o &= 
+       \begin{cases}
+         1 & \text{if $O$ results} \\
+         0 & \text{otherwise}
+       \end{cases}
+    \end{align*}
+  \item<3-> Given cue-outcome \primary{associations} $\vv = (V_1, \ldots, V_n)$ of learner, the \primary{activation level} of the outcome $O$ is
+    \[
+    \only<beamer:3| handout:1>{
+      \sum_{j=1}^n c_j V_j}
+    \only<beamer:4-| handout:0>{
+      \sum_{j=1}^n c_j\psupt V_j\psupt}
+    \]
+  \item<4-> Associations $\vv[t]$ as well as cue and outcome indicators $(\vc[t], o\psupt)$ depend on time step $t$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Rescorla-Wagner equations}
+  %% \framesubtitle{}
+  
+  \begin{itemize}
+  \item \citet{Rescorla:Wagner:72} proposed the \primary{R-W equations} for the change in associations given an event $(\vc, o)$:
+    \[
+    \Delta V_i =
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      \alpha_i \beta_1 \bigl(\lambda - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 1 \\
+      \alpha_i \beta_2 \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0 
+    \end{cases}
+    \]
+    with parameters
+    \ungap[.5]
+    \begin{align*}
+      \lambda &> 0   && \text{target activation level for outcome $O$} \\
+      \alpha_i &> 0  && \text{salience of cue $C_i$} \\
+      \beta_1 &> 0   && \text{learning rate for positive events ($o = 1$)} \\
+      \beta_2 &> 0   && \text{learning rate for negative events ($o = 0$)}
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}<beamer:1-3| handout:1>
+  \frametitle{The Widrow-Hoff rule}
+  %% \framesubtitle{}
+  
+  \begin{itemize}
+  \item The \primary{W-H rule} \citep{Widrow:Hoff:60} is a widely-used simplification of the R-W equations:
+    \begin{align*}
+    \Delta V_i &=
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      \only<beamer:1| handout:0>{\alpha_i} \beta\only<beamer:1| handout:0>{_1} \bigl(\only<beamer:1| handout:0>{\lambda}\only<beamer:2-| handout:1>{1} - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 1 \\
+      \only<beamer:1| handout:0>{\alpha_i} \beta\only<beamer:1| handout:0>{_2} \bigl(0 - \sum_{j=1}^n c_j V_j \bigr) & \text{if } c_i = 1 \wedge o = 0 
+    \end{cases}
+    \only<beamer:3-| handout:1>{\\
+       &= \primary{c_i \beta \bigl( o - \textstyle\sum_{j=1}^n c_j V_j \bigr)}}
+    \end{align*}
+    with parameters
+    \ungap[.5]
+    \begin{align*}
+      \lambda  &= 1   && \text{target activation level for outcome $O$} \\
+      \alpha_i &= 1  && \text{salience of cue $C_i$} \\
+      \beta_1  &= \beta_2   && \text{global learning rate for positive and}\\
+               &= \beta > 0 && \text{negative events}
+    \end{align*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{A simple example: German noun plurals}
+  %% \framesubtitle{}
+  
+  \small\centering
+  \begin{tabular}{r>{\color{counterpoint}}l|c|cccccc}
+    \toprule
+    $t$ & & $o$ & $c_1$ & $c_2$ & $c_3$ & $c_4$ & $c_5$ & $c_6$ \\
+    & \secondary{word} & \secondary{pl?} & \secondary{\emph{--e}} & \secondary{\emph{--n}} & \secondary{\emph{--s}} & \secondary{umlaut} & \secondary{dbl cons} & \secondary{bgrd}\\
+    \midrule
+    1 &   Bäume &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\ 
+    2 & Flasche &  0  &  1 & 0 & 0 & 0 & 0 & 1 \\ 
+    3 &    Baum &  0  &  0 & 0 & 0 & 0 & 0 & 1 \\ 
+    4 &  Gläser &  1  &  0 & 0 & 0 & 1 & 0 & 1 \\ 
+    5 &Flaschen &  1  &  0 & 1 & 0 & 0 & 0 & 1 \\ 
+    6 &   Latte &  0  &  1 & 0 & 0 & 0 & 1 & 1 \\ 
+    7 &  Hütten &  1  &  0 & 1 & 0 & 1 & 1 & 1 \\ 
+    8 &    Glas &  0  &  0 & 0 & 1 & 0 & 0 & 1 \\ 
+    9 &   Bäume &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\ 
+   10 &    Füße &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{A simple example: German noun plurals}
+  %% \framesubtitle{}
+  
+  \footnotesize\centering
+  \begin{tabular}{>{\color{counterpoint}}c|c|cccccc}
+    \toprule
+    \secondary{$t$} & \secondary{$\sum c_j V_j$} & \secondary{$V_1$} & \secondary{$V_2$} & \secondary{$V_3$} & \secondary{$V_4$} & \secondary{$V_5$} & \secondary{$V_6$} \\
+\only<beamer:1| handout:0>{\color{foreground}  1 & .000 & .000 & .000 &  .000 & .000 &  .000 & .000 }% 
+\only<beamer:2| handout:0>{\color{foreground}  2 & .400 & .200 & .000 &  .000 & .200 &  .000 & .200 }% 
+\only<beamer:3| handout:0>{\color{foreground}  3 & .120 & .120 & .000 &  .000 & .200 &  .000 & .120 }% 
+\only<beamer:4| handout:0>{\color{foreground}  4 & .296 & .120 & .000 &  .000 & .200 &  .000 & .096 }% 
+\only<beamer:5| handout:0>{\color{foreground}  5 & .237 & .120 & .000 &  .000 & .341 &  .000 & .237 }% 
+\only<beamer:6| handout:0>{\color{foreground}  6 & .509 & .120 & .153 &  .000 & .341 &  .000 & .389 }% 
+\only<beamer:7| handout:0>{\color{foreground}  7 & .679 & .018 & .153 &  .000 & .341 & -.102 & .288 }% 
+\only<beamer:8| handout:0>{\color{foreground}  8 & .352 & .018 & .217 &  .000 & .405 & -.038 & .352 }% 
+\only<beamer:9| handout:0>{\color{foreground}  9 & .704 & .018 & .217 & -.070 & .405 & -.038 & .281 }% 
+\only<beamer:10| handout:1>{\color{foreground}10 & .882 & .077 & .217 & -.070 & .464 & -.038 & .340 }% 
+\only<beamer:11| handout:0>{\color{foreground}11 &      & .101 & .217 & -.070 & .488 & -.038 & .364 }%
+    \\
+    \midrule
+    \only<beamer:1| handout:0>{   Bäume &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\ }% 
+    \only<beamer:2| handout:0>{ Flasche &  0  &  1 & 0 & 0 & 0 & 0 & 1 \\ }% 
+    \only<beamer:3| handout:0>{    Baum &  0  &  0 & 0 & 0 & 0 & 0 & 1 \\ }% 
+    \only<beamer:4| handout:0>{  Gläser &  1  &  0 & 0 & 0 & 1 & 0 & 1 \\ }% 
+    \only<beamer:5| handout:0>{Flaschen &  1  &  0 & 1 & 0 & 0 & 0 & 1 \\ }% 
+    \only<beamer:6| handout:0>{   Latte &  0  &  1 & 0 & 0 & 0 & 1 & 1 \\ }% 
+    \only<beamer:7| handout:0>{  Hütten &  1  &  0 & 1 & 0 & 1 & 1 & 1 \\ }% 
+    \only<beamer:8| handout:0>{    Glas &  0  &  0 & 0 & 1 & 0 & 0 & 1 \\ }% 
+    \only<beamer:9| handout:0>{   Bäume &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\ }% 
+    \only<beamer:10| handout:1>{   Füße &  1  &  1 & 0 & 0 & 1 & 0 & 1 \\}% 
+    \only<beamer:11| handout:0>{& & & & & & & \\ }%
+    \phantom{Flaschen} & \secondary{$o$} & \secondary{$c_1$} & \secondary{$c_2$} & \secondary{$c_3$} & \secondary{$c_4$} & \secondary{$c_5$} & \secondary{$c_6$} \\
+    \bottomrule
+  \end{tabular}
+
+  \gap[1]
+  \only<beamer:1| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_1}}%
+  \only<beamer:2| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_2}}%
+  \only<beamer:3| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_3}}%
+  \only<beamer:4| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_4}}%
+  \only<beamer:5| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_5}}%
+  \only<beamer:6| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_6}}%
+  \only<beamer:7| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_7}}%
+  \only<beamer:8| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_8}}%
+  \only<beamer:9| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_9}}%
+  \only<beamer:10| handout:1>{\includegraphics[width=8cm]{img/german_plural_rw_step_10}}%
+  \only<beamer:11| handout:0>{\includegraphics[width=8cm]{img/german_plural_rw_step_11}}%
+\end{frame}
+
+\begin{frame}
+  \frametitle{A stochastic NDL learner}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item<1-> A specific event sequence $(\vc[t], o\psupt)$ will only be encountered in controlled experiments
+  \item<2-> For applications in corpus linguistics, it is more plausible to assume that events are randomly sampled from a population of \primary{event tokens} $(\vc[k], o\psup{k})$ for $k = 1, \ldots, m$
+    \begin{itemize}
+    \item[\hand] event types listed repeatedly proportional to their frequency
+    \end{itemize}
+  \item<3-> I.i.d.\ random variables $\vc[t] \sim \vc$ and $o\psupt\sim o$
+    \begin{itemize}
+    \item[\hand] distributions of $\vc$ and $o$ determined by population
+    \end{itemize}
+  \item<3-> NDL can now be trained for arbitrary number of time steps, even if population is small (as in our example)
+    \begin{itemize}
+    \item study asymptotic behaviour of learners
+    \item convergence \so stable ``adult'' state of associations
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{A stochastic NDL learner}
+  \framesubtitle{Effect of the learning rate $\beta$}
+
+  \centering\ungap[1]
+  \only<beamer:1| handout:1>{\includegraphics[width=11cm]{img/german_plural_rw_b050_n200}}%
+  \only<beamer:2| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b020_n200}}%
+  \only<beamer:3| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b010_n200}}%
+  \only<beamer:4| handout:2>{\includegraphics[width=11cm]{img/german_plural_rw_b005_n200}}%
+  \only<beamer:5| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b001_n200}}%
+  \only<beamer:6| handout:0>{\includegraphics[width=11cm]{img/german_plural_rw_b001_n2000}}%
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\subsection{The Danks equilibrium}
+
+\begin{frame}
+  \frametitle{Expected activation levels}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item Since we are interested in the general behaviour of a stochastic NDL, it makes sense to average over many individual learners to obtain \primary{expected associations} $\bigExp{V_j\psupt}$
+  \end{itemize}
+
+  \[
+  \bigExp{V_{j}\psup{t+1}} = \bigExp{V_j\psupt} + \bigExp{\Delta V_j\psupt}
+  \]
+
+  \ungap[.5]
+  \begin{align*}
+    \bigExp{\Delta V_j\psupt} 
+    &= \Expscale{ 
+      c_i \beta \bigl( o - \textstyle\sum_{j=1}^n c_j V_j\psupt \bigr)
+      } \qquad\qquad\qquad\qquad \\
+    & \only<beamer:2| handout:0>{
+      = \beta\cdot \bigExp{c_i o} - \beta\cdot \Expscale{c_i \textstyle\sum_{j=1}^n c_j V_j\psupt}
+      }%
+      \only<beamer:3| handout:0>{
+      = \beta\cdot \bigExp{c_i o} - \beta\cdot \textstyle\sum_{j=1}^n \secondary{\bigExp{c_i c_j V_j\psupt}}
+      }%
+      \only<beamer:4| handout:0>{
+      = \beta\cdot \secondary{\bigExp{c_i o}} - \beta\cdot \textstyle\sum_{j=1}^n \secondary{\bigExp{c_i c_j}} \bigExp{V_j\psupt}
+      }% 
+      \only<beamer:5| handout:1>{
+      = \beta\cdot\left( \p{C_i, O} - \textstyle\sum_{j=1}^n \p{C_i, C_j} \bigExp{V_j\psupt} \right)
+      }% 
+  \end{align*}
+
+  \begin{itemize}
+  \item<3-> $c_i$ and $c_j$ are independent from $V_j\psupt$
+  \item<4-> indicator variables: $\Exp{c_i o} = \p{C_i, O}$; $\Exp{c_i c_j} = \p{C_i, C_j}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Expected activation levels}
+  %% \framesubtitle{}
+  
+  \ungap[1.5]
+  \[
+  \only<beamer:1-5| handout:0>{\Delta V_j\psupt = c_i\psupt \beta \bigl( o\psupt - \textstyle\sum_{j=1}^n c_j\psupt V_j\psupt \bigr)}%
+  \only<beamer:6-| handout:1>{\bigExp{\Delta V_j\psupt} = \beta\cdot\bigl( \p{C_i, O} - \textstyle\sum_{j=1}^n \p{C_i, C_j} \bigExp{V_j\psupt} \bigr)}%
+  \]
+  
+  \centering
+  \only<beamer:1| handout:0>{\includegraphics[width=10cm]{img/german_plural_exp_rw_step_1}}%
+  \only<beamer:2| handout:0>{\includegraphics[width=10cm]{img/german_plural_exp_rw_step_2}}%
+  \only<beamer:3| handout:0>{\includegraphics[width=10cm]{img/german_plural_exp_rw_step_3}}%
+  \only<beamer:4| handout:0>{\includegraphics[width=10cm]{img/german_plural_exp_rw_step_4}}%
+  \only<beamer:5| handout:0>{\includegraphics[width=10cm]{img/german_plural_exp_rw_step_5}}%
+  \only<beamer:6| handout:1>{\includegraphics[width=10cm]{img/german_plural_exp_rw_final}}%
+\end{frame}
+
+\begin{frame}
+  \frametitle{The Danks equilibrium}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item If $\bigExp{V_i\psupt}$ converges, the asymptote $V_i^* = \lim_{t\to \infty} \bigExp{V_i\psupt}$ must satisfy the \primary{Danks equilibrium} conditions $\bigExp{\Delta V_i^*} = 0$, i.e.
+    \[
+    \p{C_i, O} - \textstyle\sum_{j=1}^n \p{C_i, C_j} V_j^* = 0 \quad \forall i
+    \]
+    \citep[p.~113]{Danks:03}
+    \begin{itemize}
+    \item[]
+    \end{itemize}
+  \item Now there is a clear interpretation of the Danks equilibrium as the stable average associations reached by a community of stochastic learners with input from the same population
+    \begin{itemize}
+    \item[\hand] allows us to compute the ``adult'' state of NDL without carrying out a simulation of the learning process
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{The Danks equilibrium}
+  %% \framesubtitle{}
+
+  \centering
+  \only<beamer:1| handout:0>{\includegraphics[width=11cm]{img/german_plural_exp_rw_danks}}%
+  \only<beamer:2| handout:1>{\includegraphics[width=11cm]{img/german_plural_exp_rw_danks_500}}%
+\end{frame}
+
+\begin{frame}
+  \frametitle{Matrix notation}
+  %% \framesubtitle{}
+  
+  \ungap[2]
+  \begin{align*}
+    \vX &=
+    \begin{bmatrix}
+      c_1\psup{1} & \cdots & c_n\psup{1} \\
+      c_1\psup{2} & \cdots & c_n\psup{2} \\
+      \vdots      &        & \vdots      \\
+      c_1\psup{m} & \cdots & c_n\psup{m} 
+    \end{bmatrix}
+    &
+    \vz &=
+    \begin{bmatrix}
+      o\psup{1} \\
+      o\psup{2} \\
+      \vdots \\
+      o\psup{m}
+    \end{bmatrix}
+    &
+    \vw &=
+    \begin{bmatrix}
+      V\psup{1} \\
+      \vdots \\
+      V\psup{n}
+    \end{bmatrix}
+  \end{align*}
+  
+  \begin{align*}
+    \only<beamer:2-3| handout:0>{
+    \small\begin{bmatrix} 
+      f(C_1, O) \\ 
+      \vdots \\
+      f(C_n, O) 
+    \end{bmatrix}
+    &= \vX^T \vz
+    &
+    \visible<3->{
+    \small\begin{bmatrix} 
+      f(C_1, C_1) & \cdots & f(C_1, C_n) \\ 
+      \vdots      &       & \vdots \\
+      f(C_n, C_1) & \cdots & f(C_n, C_n)
+    \end{bmatrix}
+    &= \vX^T \vX
+    }}%
+    \only<beamer:4-| handout:1>{
+    \small\begin{bmatrix} 
+      \p{C_1, O} \\ 
+      \vdots \\
+      \p{C_n, O}
+    \end{bmatrix}
+    &= \tfrac{1}{m} \vX^T \vz
+    &
+    \small\begin{bmatrix} 
+      \p{C_1, C_1} & \cdots & \p{C_1, C_n} \\ 
+      \vdots      &       & \vdots \\
+      \p{C_n, C_1} & \cdots & \p{C_n, C_n}
+    \end{bmatrix}
+    &= \tfrac{1}{m} \vX^T \vX
+    }
+  \end{align*}
+  
+  \gap[1]
+  \[
+  \visible<5->{\text{\primary{Danks equilibrium:}}} \quad
+  \only<beamer:5| handout:0>{\tfrac{1}{m} \vX^T \vz - \tfrac{1}{m} \vX^T \vX \vw^* = \vnull}%
+  \only<beamer:6-| handout:1>{\vX^T \vz = \vX^T \vX \vw^*}%
+  \]
+\end{frame}
+
+\begin{frame}
+  \frametitle{Matrix notation: German noun plurals}
+  %% \framesubtitle{}
+  
+  \ungap[2]
+  \begin{align*}
+    \vX &=
+    \footnotesize\begin{bmatrix}
+      1 & 0 & 0 & 1 & 0 & 1 \\ 
+      1 & 0 & 0 & 0 & 0 & 1 \\ 
+      0 & 0 & 0 & 0 & 0 & 1 \\ 
+      0 & 0 & 0 & 1 & 0 & 1 \\ 
+      0 & 1 & 0 & 0 & 0 & 1 \\ 
+      1 & 0 & 0 & 0 & 1 & 1 \\ 
+      0 & 1 & 0 & 1 & 1 & 1 \\ 
+      0 & 0 & 1 & 0 & 0 & 1 \\      
+      1 & 0 & 0 & 1 & 0 & 1 \\ 
+      1 & 0 & 0 & 1 & 0 & 1
+    \end{bmatrix}
+    &
+    \vz &=
+    \footnotesize\begin{bmatrix}
+      1  \\
+      0  \\
+      0  \\
+      1  \\
+      1  \\
+      0  \\
+      1  \\
+      0  \\
+      1  \\
+      1 
+    \end{bmatrix}
+    &
+    \vw &=
+    \begin{bmatrix}
+      V\psup{1} \\
+      \vdots \\
+      V\psup{n}
+    \end{bmatrix}
+  \end{align*}
+  
+  \begin{align*}
+    \only<beamer:1-3| handout:0>{
+    \visible<2->{
+    \small\begin{bmatrix} 
+      3 \\ 
+      2 \\
+      0 \\
+      5 \\
+      1 \\
+      6
+    \end{bmatrix}
+    &= \vX^T \vz}
+    &
+    \visible<3->{
+    \small\begin{bmatrix} 
+      5 & 0 & 0 & 3 & 1 &  5 \\ 
+      0 & 2 & 0 & 1 & 1 &  2 \\ 
+      0 & 0 & 1 & 0 & 0 &  1 \\ 
+      3 & 1 & 0 & 5 & 1 &  5 \\ 
+      1 & 1 & 0 & 1 & 2 &  2 \\ 
+      5 & 2 & 1 & 5 & 2 & 10 
+    \end{bmatrix}
+    &= \vX^T \vX}
+    }%
+    \only<beamer:4-| handout:1>{
+    \small\begin{bmatrix} 
+      .3 \\ 
+      .2 \\
+      .0 \\
+      .5 \\
+      .1 \\
+      .6
+    \end{bmatrix}
+    &= \tfrac{1}{m} \vX^T \vz
+    &
+    \small\begin{bmatrix} 
+      .5 & .0 & .0 & .3 & .1 &  .5 \\ 
+      .0 & .2 & .0 & .1 & .1 &  .2 \\ 
+      .0 & .0 & .1 & .0 & .0 &  .1 \\ 
+      .3 & .1 & .0 & .5 & .1 &  .5 \\ 
+      .1 & .1 & .0 & .1 & .2 &  .2 \\ 
+      .5 & .2 & .1 & .5 & .2 &  1 
+    \end{bmatrix}
+    &= \tfrac{1}{m} \vX^T \vX
+    }
+  \end{align*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{NDL vs.\ the Perceptron vs.\  least-squares regression}
+
+\tikzset{input/.style={basic,circle}}
+\tikzset{weights/.style={basic,rectangle}}
+\tikzset{functions/.style={basic,circle,fill=faugold!10}}
+\tikzset{basic/.style={draw,fill=faublue!10,text width=1em,text badly centered}}
+%% \tikzset{flow/.style={draw,-{>[scale=1.2]}}} % nicer, but only works with PGF 3.0
+\tikzset{flow/.style={draw,->}} % nicer, but only works with PGF 3.0
+
+\begin{frame}
+  \frametitle{The single-layer perceptron (SLP)}
+  %% \framesubtitle{}
+
+  \begin{columns}[c]
+    \begin{column}{6cm}
+      SLP \citep{Rosenblatt:58} is the most basic feed-forward \primary{neural network}
+      \begin{itemize}
+      \item<1-> numeric inputs $x_1, \ldots, x_n$
+      \item<1-> output activation $h(y)$ based on weighted sum of inputs
+        \[
+        y = \textstyle\sum_{j=1}^n w_j x_j
+        \]
+      \item<2-> $h$ = Heaviside step function in traditional SLP
+      \item<3-> even simpler model: $h(y) = y$
+      \item<4-> cost wrt.\ target output $z$:
+        \[
+        E(\vw, \vx, z) = \left( z - \textstyle\sum_{j=1}^n w_j x_j \right)^2
+        \]
+      \end{itemize}
+    \end{column}
+    \begin{column}{5cm}
+      \begin{tikzpicture}
+        \node[functions] (center) {};
+        \node[below=0.5em of center,font=\scriptsize,text width=3.4em] {activation function $h$};
+        \draw (0em,0.75em) -- (0em,-0.75em);
+        \draw (0.75em,0em) -- (-0.75em,0em);
+        \only<beamer:1-2| handout:0>{
+          \draw[very thick, color=primary] (0.7em,0.5em) -- (0,0.5em) -- (0,-0.5em) -- (-0.7em,-0.5em);
+        }
+%%        \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
+        \only<beamer:3-| handout:1>{
+          \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
+        }
+        \node[right of=center] (right) {};
+        \path[flow] (center) -- (right);
+        \node[functions,left=1.5em of center] (left) {$\sum$};
+        \path[flow] (left) -- (center);
+        \node[weights,above left=0.5em and 2em of left] (2) {$w_2$} -- (2) node[input,left=1em of 2] (l2) {$x_2$};
+        \path[flow] (l2) -- (2);
+        \path[flow] (2) -- (left);
+        \node[below of=2] (dots) {$\vdots$} -- (dots) node[below of=l2] (ldots) {$\vdots$};
+        \node[weights,below of=dots] (n) {$w_n$} -- (n) node[input,left=1em of n] (ln) {$x_n$};
+        \path[flow] (ln) -- (n);
+        \path[flow] (n) -- (left);
+        \node[weights,above of=2] (1) {$w_1$} -- (1) node[input,left=1em of 1] (l1) {$x_1$};
+        \path[flow] (l1) -- (1);
+        \path[flow] (1) -- (left);
+        \node[below=1.5em of ln.center,font=\scriptsize] {inputs};
+        \node[below=1.5em of n.center,font=\scriptsize] {weights};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{SLP training: the delta rule}
+  %% \framesubtitle{}
+  \begin{itemize}
+  \item SLP weights are learned by \primary{gradient descent} training:\\
+    for a single training item $(\vx, z)$ and learning rate $\delta > 0$
+    \begin{align*}
+      \Delta w_i &= -\delta \frac{\partial E(\vw, \vx, z)}{\partial w_i} \\
+      \only<beamer:1-2| handout:0>{\visible<2->{&= -\delta \frac{\partial}{\partial w_i} \left( z - \sum_{j=1}^n w_j x_j \right)^2 \\}}
+      \only<beamer:3-4| handout:0>{&= -2\delta \left( z - \sum_{j=1}^n w_j x_j \right) (-x_i) \\}
+      \only<beamer:5-| handout:1>{&= 2\delta x_i \left( z - \sum_{j=1}^n x_ j w_j \right) \\}
+      \visible<4->{&= \secondary{\beta c_i \bigl( o - \textstyle\sum_{j=1}^n c_j V_j \bigr)}}
+    \end{align*}
+  \item<6-> Perfect \primary{correspondence to W-H rule} with
+    \[
+    V_i = w_i \qquad c_i = x_i \qquad o = z \qquad \beta = 2\delta
+    \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Batch training}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item Neural networks often use \primary{batch training}, where all training data are considered at once instead of one item at a time
+  \item Similar to stochastic NDL, batch training computes the expected weights $\bigExp{\vw\psupt}$ for a SLP with stochastic input
+  \item<2-> The corresponding batch training cost is
+    \begin{align*}
+    E(\vw) &= \frac{1}{m} \sum_{k=1}^m E(\vw, \vx[k], z\psup{k}) \\
+    \visible<3->{ &= \frac{1}{m} \sum_{k=1}^m \left( z\psup{k} - \textstyle\sum_{j=1}^n w_j x_j\psup{k} \right)^2 }
+    \end{align*}
+  \item<3-> Minimization of $E(\vw)$ = linear \primary{least-squares regression}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Linear least-squares regression}
+  %% \framesubtitle{}
+  
+  \begin{itemize}
+  \item Matrix formulation of the linear least-squares problem:
+    \begin{align*}
+      E(\vw) &= \frac{1}{m} \sum_{k=1}^m \left( z\psup{k} - \textstyle\sum_{j=1}^n w_j x_j\psup{k} \right)^2 \\
+      \visible<2->{ &= \frac{1}{m} \bigl( \vz - \vX \vw \bigr)^T \bigl( \vz - \vX \vw \bigr) }
+    \end{align*}
+  \item<3-> Minimum of $E(\vw)$, the $L_2$ solution, must satisfy $\nabla E(\vw^*) = \vnull$, which leads to the \primary{normal equations}
+    \[
+    \vX^T \vz = \vX^T \vX \vw^*
+    \]
+  \item<4-> Normal equations = Danks equilibrium conditions
+  \item<5-> Regression theory shows that batch training / stochastic NLP converges to the unique$^{\primary{*}}$ solution of the $L_2$ problem
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{What have we learned?}
+  %% \framesubtitle{}
+
+  \begin{center}\Large
+    \setlength{\fboxrule}{2pt}
+    \fcolorbox{secondary}{faugold!10!white}{
+      \begin{tabular}{c c c c c}
+        stochastic &=& batch &=& $L_2$ regression \\[1ex]
+        NDL &=& SLP
+      \end{tabular}
+    }
+  \end{center}  
+
+  \begin{itemize}
+  \item<2->[\hand] These equivalences also hold for the general R-W equations with arbitrary values of $\alpha_i$, $\beta_1$, $\beta_2$ and $\lambda$
+    \begin{itemize}
+    \item salience-adjusted weights: $w_i = V_i / \sqrt{\alpha_i}$  
+    \item scaled outcome indicators: $z = \lambda o$
+    \item scaled cue indicators:
+      \[
+        x_i = 
+        \begin{cases}
+          \sqrt{\alpha_i} & \text{if } c_i = 1 \wedge o = 1 \\
+          \sqrt{\alpha_i} \sqrt{\frac{\beta_2}{\beta_1}} & \text{if } c_i = 1 \wedge o = 0 \\
+          0 & \text{otherwise}
+        \end{cases}
+      \]
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Effects of R-W parameters}
+  %% \framesubtitle{}
+
+  
+  \begin{description}
+  \item<1->[$\beta > 0$:] learning rate \so convergence of individual learners
+  \item<2->[$\lambda \neq 1$:]\gap[.5] linear scaling of associations / activation (obvious)
+  \item<3->[$\alpha_i\neq 1$:]\gap[.5] salience of cue $C_i$ determines how fast associations are learned, but does not affect the final stable associations (same $L_2$ regression problem)
+  \item<4->[$\beta_1 \neq \beta_2$:]\gap[.5] different positive/negative learning rates \emph{do} affect the stable associations; closely related to prevalence of positive and negative events in the population
+  \end{description}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3 NLP
+\section{Natural language processing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Machine learning in NLP}
+
+\begin{frame}
+  \frametitle{The last 50 years of computational linguistics}
+
+  \begin{center}
+    \begin{tabular}{lp{4cm}p{5cm}}
+      1970s & Rule-based approaches & Toy worlds, expert systems \\
+            & & \\
+      \onslide<2->
+      1980s & Linguistic theories & \\
+            & Formal language theory & \\
+      \onslide<3->
+      1990s & & Large corpora\\
+            & Probabilistic models & \\
+      \onslide<4->
+      2000s & & Supervised classification \\
+            & Machine learning & \\
+      \onslide<5->
+      2010s & & \\
+            & Deep learning (RNN) & \\
+      2020s & & End-to-end learning
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NLP as supervised classification}
+  \newcommand{\out}{\color<2->{fourth!20!white}}%
+  \newcommand{\bdry}{\primary{$\,$\rule{1pt}{1em}\raisebox{1ex}{$^?\!\!$}}}%
+  
+  \h{Part-of-speech tagging}
+
+  \begin{center}\large
+    \begin{tabular}{cccccccc}
+      & \code{JJ} & & & & & \\
+      \code{\out RB} & \code{\out VVP} & \code{\out VVP} & \code{VVZ} & & \code{\out VVZ} & \\
+      \code{DT} & \code{\out NN} & \code{NN} & \code{\out NNS} & \code{CD} & \code{NNS} & \code{SENT}\\
+      \textcite{This} & \textcite{light} & \textcite{brew} & \textcite{costs} & \textcite{ten} & \textcite{bucks} & \textcite{.} 
+    \end{tabular}
+  \end{center}
+
+  \gap[1]
+  \onslide<3->
+  \h{Tokenization}
+
+  \begin{center}\large
+    \textcite{The 14\bdry F model is approx\bdry . 15\bdry cm long\bdry .}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NLP as supervised classification}
+  \newcommand{\OP}{\primary{[}}%
+  \newcommand{\CL}{\primary{]}}%
+  
+  \h{Syntactic attachment disambiguation}
+
+  \begin{center}
+    \textcite{\large I saw the girl and the boy with glasses.}\\
+    \normalsize\gap[.5]\onslide<2->
+    I saw \OP{}the girl and the boy\CL{} \OP{}with glasses\CL{}\\
+    I saw \OP{}\OP{}the girl and the boy\CL{} with glasses\CL{}\\
+    I saw \OP{}the girl\CL{} and \OP{}the boy with glasses\CL{}
+  \end{center}
+
+  \gap[1]
+  \onslide<3->
+  \h{Dependency parsing}
+  \begin{center}
+    \includegraphics[width=10cm]{img/corenlp_parse2}%
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{NLP as supervised classification}
+
+  \h{Named entity recognition}
+  \begin{center}\ungap[1]
+    \includegraphics[width=11cm]{img/corenlp_ner}%
+  \end{center}
+
+  \gap[1]
+  \onslide<2->
+  \h{Semantic role labelling\\
+    Word sense disambiguation\\
+    Sentiment analysis\\
+    Author profiling\\
+    Recognizing textual entailment\\
+    Automatic grading\\
+    \ldots}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MaxEnt and logistic regression}
+
+\begin{frame}
+  \frametitle{The maximum entropy approach (MaxEnt)}
+
+  \begin{itemize}
+  \item A popular machine learning algorithm in NLP is based on the maximum entropy principle \citep{Berger:DellaPietra:96}
+  \item Estimate conditional distribution $p(y|x)$ with maximal entropy
+    \[
+      H(p) = -\sum_{x,y} \tilde{p}(x) p(y|x) \log p(y|x)
+    \]
+    so that expectations of features $f_i(x, y)$ match training data
+    \[
+      \Exp[p]{f_i(x, y)} = \sum_{x,y} \tilde{p}(x, y) f_i(x, y)
+    \]
+  \item<2->[\hand] These features represent associations between outcomes ($y$) and cues (different properties of $x$)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The maximum entropy approach (MaxEnt)}
+
+  \begin{itemize}
+  \item Leads to a log-linear probability distribution
+    \[
+      p(y|x) \sim e^{\sum_i \lambda_i f_i(x, y)}
+    \]
+    whose parameters $\lambda_i$ are optimized to maximize the log-likelihood
+    of the training data
+  \item[]
+  \item For binary $y$, this is equivalent to \primary{logistic regression}
+    \begin{itemize}
+    \item remember \citet{Bresnan:etc:07}?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Logistic regression and NDL}
+  %% \framesubtitle{}
+
+  \begin{columns}[T]
+    \begin{column}{6cm}
+      Logistic regression is the standard tool for predicting a categorical response from binary features 
+      \begin{itemize}
+      \item<1-> can be expressed as SLP with probabilistic interpretation
+      \item<2-> uses logistic activation function
+        \[
+        h(y) = \frac{1}{1 + e^{-y}}
+        \]
+      \item<3-> and Bernoulli cost
+        \[
+        E(\vw, \vx, z) = \begin{cases}
+          -\log h(y) & \text{if } z = 1 \\
+          -\log (1 - h(y)) & \text{if } z = 0
+        \end{cases}
+        \]
+      \end{itemize}
+    \end{column}
+    \begin{column}{5cm}
+      \begin{tikzpicture}
+        \node[functions] (center) {};
+        \node[below=0.5em of center,font=\scriptsize,text width=3.4em] {activation function $h$};
+        \draw (0em,0.75em) -- (0em,-0.75em);
+        \draw (0.75em,0em) -- (-0.75em,0em);
+        \only<beamer:1| handout:0>{
+          \draw[very thick, color=primary] (0.6em,0.6em) -- (-0.6em,-0.6em);
+        }
+        \only<beamer:2-| handout:1>{
+          \draw[very thick, color=primary] (0.7em,0.5em) .. controls (-0.2em,0.5em) and (0.2em,-0.5em) .. (-0.7em,-0.5em);
+        }
+        \node[right of=center] (right) {};
+        \path[flow] (center) -- (right);
+        \node[functions,left=1.5em of center] (left) {$\sum$};
+        \path[flow] (left) -- (center);
+        \node[weights,above left=0.5em and 2em of left] (2) {$w_2$} -- (2) node[input,left=1em of 2] (l2) {$x_2$};
+        \path[flow] (l2) -- (2);
+        \path[flow] (2) -- (left);
+        \node[below of=2] (dots) {$\vdots$} -- (dots) node[below of=l2] (ldots) {$\vdots$};
+        \node[weights,below of=dots] (n) {$w_n$} -- (n) node[input,left=1em of n] (ln) {$x_n$};
+        \path[flow] (ln) -- (n);
+        \path[flow] (n) -- (left);
+        \node[weights,above of=2] (1) {$w_1$} -- (1) node[input,left=1em of 1] (l1) {$x_1$};
+        \path[flow] (l1) -- (1);
+        \path[flow] (1) -- (left);
+        \node[below=1.5em of ln.center,font=\scriptsize] {inputs};
+        \node[below=1.5em of n.center,font=\scriptsize] {weights};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Logistic regression and NDL}
+  %% \framesubtitle{}
+
+  \begin{itemize}
+  \item Gradient descent training leads to delta rule that corresponds to a modified version of the R-W equations
+    \[
+    \Delta V_i =
+    \begin{cases}
+      0 & \text{if } c_i = 0\\
+      \beta \left( 1 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 1 \\
+      \beta \left( 0 - h \bigl( \sum_{j=1}^n c_j V_j \bigr) \right) & \text{if } c_i = 1 \wedge o = 0
+    \end{cases}
+    \]
+  \item<2-> Same as original R-W, except that activation level is now transformed into probability $h(y)$
+  \item<2-> But no easy way to analyze stochastic learning process\\
+    (batch training $\neq$ expected value of single-item training)
+  \item<2-> Less robust for highly predictable outcomes \so $\vw$ diverges
+  \end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Conclusion}
+
+\begin{frame}
+  \frametitle{Summary \& some open questions}
+  %% \framesubtitle{}
+  \begin{center}
+    \setlength{\fboxrule}{1pt}
+    \fcolorbox{secondary}{faugold!10!white}{
+      \begin{tabular}{c c c c c}
+        stochastic &=& batch &=& $L_2$ regression \\[1ex]
+        NDL &=& linear SLP \\[1ex]
+        MaxEnt &=& sigmoid SLP &=& logistic regression
+      \end{tabular}
+    }
+  \end{center}
+
+  \gap[1]
+  \begin{itemize}
+  \item How many training steps are needed for a stochastic NDL learner to
+    converge to the Danks equilibrium?
+  \item What is the relation between NDL and regularized regression?
+  \item How does logistic regression behave as incremental learner?
+  \item Which sequences / patterns in the input data lead to significantly
+    different behaviour from a stochastic learner?
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Acknowledgements}
+  %% \framesubtitle{}
+
+  \ungap[1]
+  \begin{columns}[T]
+    \begin{column}{55mm}
+      \includegraphics[width=52mm]{img/ratti_cinnamon_rolls}
+      
+      \scriptsize
+      Follow me on Twitter: \secondary{@RattiTheRat}
+    \end{column}
+    \begin{column}{50mm}
+      The mathematical analysis was fuelled by large amounts of coffee and cinnamon rolls at Cinnabon, Harajuku, Tokyo
+
+      \vspace{8em}
+      Based on joint research with Antti Arppe (U Alberta).
+      Read \citet{Evert:Arppe:15} for the full story.
+    \end{column}
+
+  \end{columns}
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% References (if any)
+
+\frame[allowframebreaks]{
+  \frametitle{References}
+  \bibliographystyle{natbib-stefan}
+  \begin{scriptsize}
+    \bibliography{references}
+  \end{scriptsize}
+}
+
+\end{document}

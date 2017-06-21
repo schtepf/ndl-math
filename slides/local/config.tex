@@ -14,11 +14,12 @@
 %% \definecolor{light}{rgb}{.45, .3, .55}
 %% \definecolor{puregreen}{rgb}{0, .35, 0}
 
-%% parenthesized superscript (time step / event token)
-\newcommand{\psup}[1]{\ensuremath{^{(#1)}}}
-\newcommand{\psupt}{\psup{t}}
-
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows} %% should be arrows.meta (PGF 3.0 and newer) for nicer plots
 \usepackage{pgfplots}
+
+%% parenthesized superscript (time step / event token)
+\newcommand{\psup}[1]{\ensuremath{^{(#1)}}}
+\newcommand{\psupt}{\psup{t}}
+
